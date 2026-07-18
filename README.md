@@ -1,9 +1,9 @@
 # Keisei Kondo — Portfolio
 
-Night-drive themed portfolio for a **Full-Stack Developer**.  
-A Three.js highway scene runs behind the page; scroll moves you along the road, and the Contact section pulls into a gas-station stop.
+Space-themed portfolio for a **Full-Stack Developer**.  
+A Three.js starfield runs behind the page; the hero title is drawn as twinkling stars, and sections use scroll-driven motion with a glossy navy UI.
 
-**Live feel:** winding night road · luxury coupe · scroll-linked speed · UI motion
+**Live feel:** black space · shooting stars · star-text hero · hamburger nav · scroll reveals
 
 ---
 
@@ -55,26 +55,30 @@ vite-project/
     ├── styles/
     │   └── global.css         # Layout, typography, motion
     ├── ui/
-    │   └── reveal.ts          # Scroll reveal & word animations
+    │   ├── hero.ts            # Star-title canvas, parallax, entrance
+    │   ├── nav.ts             # Hamburger menu
+    │   ├── reveal.ts          # Scroll reveal & word animations
+    │   └── cursor.ts          # Custom cursor
     └── scene/
-        └── portfolioScene.ts  # Three.js road / car / station
+        └── portfolioScene.ts  # Three.js starfield / shooting stars
 ```
 
 ---
 
 ## Features
 
-- **3D night drive** — winding road, streetlights, stars, luxury car with clear-coat paint
-- **Scroll-driven motion** — road speed follows scroll; Contact section parks at the gas station
-- **Speed readout** — live `KM/H` in the header (same role as a clock/timezone chip on other portfolios)
-- **UI motion** — section reveals, staggered word rise-ins, skills marquee
+- **3D space background** — layered twinkling stars, dust warp on scroll, occasional shooting stars
+- **Star-text hero** — “Full-Stack Developer” rendered as constellation particles
+- **Hamburger navigation** — About / Skills / Projects / Focus / Contact
+- **UI motion** — blur-to-sharp section reveals, staggered word rise-ins, skills marquee
+- **Glossy navy accents** — buttons and lead copy on a black space base
 - **Accessible basics** — skip link, semantic landmarks, `prefers-reduced-motion` support
 
 ---
 
 ## Sections
 
-1. **Hero** — name & role  
+1. **Hero** — role (star text), short pitch, CTAs  
 2. **About** — full-stack focus  
 3. **Skills** — HTML, CSS, TypeScript, Node.js, Express, Astro, PostgreSQL, Three.js, Git, GitHub  
 4. **Projects** — Interactive Portfolio (+ placeholders)  
@@ -97,7 +101,7 @@ vite-project/
 ## Notes
 
 - Base path is `./` so the build can be hosted from a subdirectory or static host.
-- The canvas (`#bg`) is decorative (`aria-hidden`) and does not capture pointer events; content stays left so it doesn’t cover the car.
+- The canvas (`#bg`) is decorative (`aria-hidden`) and does not capture pointer events.
 
 ---
 
