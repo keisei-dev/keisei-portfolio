@@ -34,22 +34,31 @@
           aria-expanded="false"
           aria-controls="site-menu"
         >
+          <span class="menu-toggle__label" data-menu-label>Menu</span>
           <span class="menu-toggle__box" aria-hidden="true">
-            <span class="menu-toggle__bar"></span>
             <span class="menu-toggle__bar"></span>
             <span class="menu-toggle__bar"></span>
           </span>
         </button>
         <div class="nav-backdrop" data-nav-backdrop hidden></div>
         <nav class="site-nav" id="site-menu" aria-label="Primary" hidden>
-          <p class="nav-label">Menu</p>
-          <ul>
-            <li><a href="#about"><span class="nav-index">01</span>About</a></li>
-            <li><a href="#skills"><span class="nav-index">02</span>Skills</a></li>
-            <li><a href="#projects"><span class="nav-index">03</span>Projects</a></li>
-            <li><a href="#focus"><span class="nav-index">04</span>Focus</a></li>
-            <li><a href="#contact"><span class="nav-index">05</span>Contact</a></li>
-          </ul>
+          <div class="site-nav__panel">
+            <header class="site-nav__head">
+              <p class="nav-label">Navigate</p>
+              <p class="nav-meta">Keisei Kondo</p>
+            </header>
+            <ul>
+              <li style="--i: 0"><a href="#about"><span class="nav-index">01</span><span class="nav-link-text">About</span></a></li>
+              <li style="--i: 1"><a href="#skills"><span class="nav-index">02</span><span class="nav-link-text">Skills</span></a></li>
+              <li style="--i: 2"><a href="#projects"><span class="nav-index">03</span><span class="nav-link-text">Projects</span></a></li>
+              <li style="--i: 3"><a href="#focus"><span class="nav-index">04</span><span class="nav-link-text">Focus</span></a></li>
+              <li style="--i: 4"><a href="#contact"><span class="nav-index">05</span><span class="nav-link-text">Contact</span></a></li>
+            </ul>
+            <footer class="site-nav__foot">
+              <span>Full-Stack Developer</span>
+              <a href="mailto:keisei20001206@gmail.com">Email</a>
+            </footer>
+          </div>
         </nav>
       </div>
     </header>
@@ -65,12 +74,22 @@
             <span class="visually-hidden">Full-Stack Developer</span>
             <canvas class="hero-star-title" data-hero-stars aria-hidden="true"></canvas>
           </h1>
-          <p class="sub" data-hero-line>
-            Designing and shipping complete web products — APIs, databases, and polished interfaces.
-          </p>
-          <div class="hero-actions" data-hero-line>
-            <a class="cta" href="#contact">Get in touch</a>
-            <a class="hero-link" href="#projects">View projects</a>
+          <div class="hero-lower" data-hero-line>
+            <p class="hero-lead">
+              I design and ship complete web products —
+              <em>from API to interface.</em>
+            </p>
+            <p class="hero-meta">
+              <span>API design</span>
+              <span class="hero-meta__dot" aria-hidden="true">✦</span>
+              <span>Data architecture</span>
+              <span class="hero-meta__dot" aria-hidden="true">✦</span>
+              <span>Interface systems</span>
+            </p>
+            <div class="hero-actions">
+              <a class="cta hero-cta" href="#contact">Start a project</a>
+              <a class="hero-link" href="#projects">Selected work</a>
+            </div>
           </div>
         </div>
         <a class="hero-scroll" href="#about" aria-label="Scroll to about">

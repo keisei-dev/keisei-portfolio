@@ -1,4 +1,4 @@
-/** Professional custom cursor: blend-mode ring + magnetic hover. */
+/** Custom cursor: snappy ring + dot, light hover scale (no magnet lag). */
 export function initCursor() {
   const finePointer = window.matchMedia('(pointer: fine)').matches;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,11 +26,9 @@ export function initCursor() {
   let visible = false;
   let hovering = false;
   let pressed = false;
-  let magnetX = 0;
-  let magnetY = 0;
 
   const interactiveSelector =
-    'a, button, .cta, .tag, .contact-link, input, textarea, summary, [role="button"], .hero-star-title';
+    'a, button, .cta, .tag, .contact-link, input, textarea, summary, [role="button"]';
 
   const setVisible = (on: boolean) => {
     visible = on;
@@ -47,18 +45,6 @@ export function initCursor() {
       const el = e.target instanceof Element ? e.target.closest(interactiveSelector) : null;
       hovering = !!el;
       root.classList.toggle('is-hover', hovering);
-
-      if (el instanceof HTMLElement) {
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        // Soft magnetic pull toward interactive centers
-        magnetX = (cx - mx) * 0.18;
-        magnetY = (cy - my) * 0.18;
-      } else {
-        magnetX = 0;
-        magnetY = 0;
-      }
     },
     { passive: true },
   );
@@ -75,17 +61,13 @@ export function initCursor() {
   document.addEventListener('mouseenter', () => setVisible(true));
 
   function tick() {
-    const tx = mx + magnetX;
-    const ty = my + magnetY;
+    // Near-instant follow — avoids the heavy laggy feel
+    dx += (mx - dx) * 0.65;
+    dy += (my - dy) * 0.65;
+    rx += (mx - rx) * 0.42;
+    ry += (my - ry) * 0.42;
 
-    // Dot: snappy
-    dx += (tx - dx) * 0.45;
-    dy += (ty - dy) * 0.45;
-    // Ring: heavier lag for dynamism
-    rx += (tx - rx) * (hovering ? 0.22 : 0.12);
-    ry += (ty - ry) * (hovering ? 0.22 : 0.12);
-
-    const scale = pressed ? 0.75 : hovering ? 1.55 : 1;
+    const scale = pressed ? 0.75 : hovering ? 1.35 : 1;
     ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%) scale(${scale})`;
     dot.style.transform = `translate3d(${dx}px, ${dy}px, 0) translate(-50%, -50%) scale(${pressed ? 0.5 : 1})`;
 

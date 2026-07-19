@@ -4,6 +4,7 @@ export function initNav() {
   const nav = document.querySelector<HTMLElement>('.site-nav');
   const wrap = document.querySelector<HTMLElement>('.nav-wrap');
   const backdrop = document.querySelector<HTMLElement>('[data-nav-backdrop]');
+  const label = document.querySelector<HTMLElement>('[data-menu-label]');
   if (!toggle || !nav || !wrap) return;
 
   const setOpen = (open: boolean) => {
@@ -11,6 +12,7 @@ export function initNav() {
     document.documentElement.classList.toggle('nav-open', open);
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (label) label.textContent = open ? 'Close' : 'Menu';
 
     if (open) {
       nav.removeAttribute('hidden');
