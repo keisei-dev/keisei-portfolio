@@ -1,4 +1,4 @@
-/** Split flagged paragraphs into per-word spans for a staggered rise-in. */
+/** Split flagged paragraphs into per-word spans for a masked rise-in. */
 function prepareWordSpans() {
   document.querySelectorAll<HTMLElement>('[data-words]').forEach((el) => {
     const words = (el.textContent ?? '').trim().split(/\s+/);
@@ -13,6 +13,15 @@ function prepareWordSpans() {
       word.appendChild(inner);
       el.appendChild(word);
       el.appendChild(document.createTextNode(' '));
+    });
+  });
+}
+
+/** Index highlight phrases for staggered underline draws. */
+function prepareProseCopy() {
+  document.querySelectorAll<HTMLElement>('[data-prose-copy]').forEach((root) => {
+    root.querySelectorAll<HTMLElement>('.hl').forEach((hl, i) => {
+      hl.style.setProperty('--hl', String(i));
     });
   });
 }
@@ -53,9 +62,44 @@ function initSectionNav() {
   sections.forEach(({ el }) => io.observe(el));
 }
 
-/** Fade/slide (and word-rise) elements in as they enter the viewport. */
+/** Soft scroll drift inside revealed panels — keeps the page feeling alive. */
+function initPanelDrift() {
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-panel]'));
+  if (!panels.length) return;
+
+  let ticking = false;
+
+  const update = () => {
+    ticking = false;
+    const vh = window.innerHeight || 1;
+    for (const panel of panels) {
+      if (!panel.classList.contains('in-view')) {
+        panel.style.removeProperty('--panel-drift');
+        continue;
+      }
+      const rect = panel.getBoundingClientRect();
+      const mid = rect.top + rect.height * 0.35;
+      const progress = (mid - vh * 0.45) / vh;
+      const drift = Math.max(-18, Math.min(18, progress * -28));
+      panel.style.setProperty('--panel-drift', `${drift.toFixed(2)}px`);
+    }
+  };
+
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+}
+
+/** Orchestrated reveal: mask wipe, stagger, then subtle drift. */
 export function initReveal() {
   prepareWordSpans();
+  prepareProseCopy();
   initSectionNav();
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -66,16 +110,30 @@ export function initReveal() {
     return;
   }
 
+  initPanelDrift();
+
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          io.unobserve(entry.target);
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        el.classList.add('in-view');
+
+        // Stagger direct reveal children inside a panel for a cascade
+        if (el instanceof HTMLElement && el.hasAttribute('data-panel')) {
+          const kids = el.querySelectorAll<HTMLElement>('[data-reveal], [data-words]');
+          kids.forEach((kid, i) => {
+            if (!kid.style.getPropertyValue('--reveal-delay')) {
+              kid.style.setProperty('--reveal-delay', `${0.08 + i * 0.07}s`);
+            }
+          });
+          window.setTimeout(() => el.classList.add('is-settled'), 1100);
         }
+
+        io.unobserve(el);
       });
     },
-    { threshold: 0.16, rootMargin: '0px 0px -8% 0px' },
+    { threshold: 0.18, rootMargin: '0px 0px -10% 0px' },
   );
 
   revealEls.forEach((el) => io.observe(el));

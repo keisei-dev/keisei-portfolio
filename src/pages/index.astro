@@ -79,15 +79,13 @@
               I design and ship complete web products —
               <em>from API to interface.</em>
             </p>
-            <p class="hero-meta">
-              <span>API design</span>
-              <span class="hero-meta__dot" aria-hidden="true">✦</span>
-              <span>Data architecture</span>
-              <span class="hero-meta__dot" aria-hidden="true">✦</span>
-              <span>Interface systems</span>
-            </p>
             <div class="hero-actions">
-              <a class="cta hero-cta" href="#contact">Start a project</a>
+              <a class="hero-cta" href="#contact">
+                <span class="hero-cta__label">Start a project</span>
+                <span class="hero-cta__icon" aria-hidden="true">
+                  <span class="hero-cta__chevron"></span>
+                </span>
+              </a>
               <a class="hero-link" href="#projects">Selected work</a>
             </div>
           </div>
@@ -99,18 +97,26 @@
       </section>
 
       <section class="panel" id="about" aria-labelledby="about-heading">
-        <div class="panel-body" data-panel>
+        <div class="panel-body about-body" data-panel data-about>
           <header class="section-head" data-reveal>
             <h2 id="about-heading">About</h2>
           </header>
-          <p class="lead" data-words>
+          <p class="lead prose-lead" data-words>
             Full-stack developer across the whole stack.
           </p>
-          <p class="copy" data-words>
-            I design and ship complete web products — REST &amp; API layers, relational data models, and
-            polished front-ends. Comfortable owning a feature from schema to deployment, I care about clean
-            architecture and interfaces that feel effortless to use.
-          </p>
+          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
+            <p class="copy prose-line" style="--l: 0">
+              I design and ship complete web products —
+              <span class="hl">REST &amp; API layers</span>,
+              <span class="hl">relational data models</span>, and
+              polished front-ends.
+            </p>
+            <p class="copy prose-line" style="--l: 1">
+              Comfortable owning a feature from
+              <span class="hl">schema to deployment</span>, I care about clean
+              architecture and interfaces that feel effortless to use.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -149,7 +155,7 @@
           <ul class="project-list" role="list">
             <li class="project-row" data-reveal style="--reveal-delay: 0.16s">
               <span class="project-name">Interactive Portfolio</span>
-              <span class="project-meta">Astro · Three.js · real-time WebGL scene</span>
+              <span class="project-meta"><span class="hl">Astro</span> · <span class="hl">Three.js</span> · real-time WebGL scene</span>
             </li>
             <li class="project-row project-row--empty" data-reveal style="--reveal-delay: 0.22s">
               <span class="project-name">Coming soon</span>
@@ -168,11 +174,18 @@
           <header class="section-head" data-reveal>
             <h2 id="focus-heading">Focus</h2>
           </header>
-          <p class="lead" data-words>Where I'm pointing next.</p>
-          <p class="copy" data-words>
-            Type-safe APIs, well-modeled databases, and front-ends that stay fast and accessible. I care about
-            the full pipeline — DX, performance, and shipping features that hold up in production.
-          </p>
+          <p class="lead prose-lead" data-words>Where I'm pointing next.</p>
+          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
+            <p class="copy prose-line" style="--l: 0">
+              <span class="hl">Type-safe APIs</span>, well-modeled databases, and front-ends that stay
+              fast and accessible.
+            </p>
+            <p class="copy prose-line" style="--l: 1">
+              I care about the full pipeline —
+              <span class="hl">DX</span>, <span class="hl">performance</span>, and shipping features
+              that hold up in production.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -181,10 +194,15 @@
           <header class="section-head" data-reveal>
             <h2 id="contact-heading">Contact</h2>
           </header>
-          <p class="lead" data-words>Let's build something together.</p>
-          <p class="copy" data-words>
-            Looking for a full-stack developer for your next project? Let's talk — I'll get back to you soon.
-          </p>
+          <p class="lead prose-lead" data-words>Let's build something together.</p>
+          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
+            <p class="copy prose-line" style="--l: 0">
+              Looking for a <span class="hl">full-stack developer</span> for your next project?
+            </p>
+            <p class="copy prose-line" style="--l: 1">
+              Let's talk — I'll get back to you soon.
+            </p>
+          </div>
           <div class="contact-actions" data-reveal style="--reveal-delay: 0.16s">
             <a class="cta" href="mailto:keisei20001206@gmail.com"
               >Send message<span class="cta-arrow" aria-hidden="true"> →</span></a

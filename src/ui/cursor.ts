@@ -28,7 +28,7 @@ export function initCursor() {
   let pressed = false;
 
   const interactiveSelector =
-    'a, button, .cta, .tag, .contact-link, input, textarea, summary, [role="button"]';
+    'a, button, .cta, .hero-cta, .tag, .contact-link, input, textarea, summary, [role="button"]';
 
   const setVisible = (on: boolean) => {
     visible = on;
