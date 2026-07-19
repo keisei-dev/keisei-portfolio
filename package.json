@@ -1,0 +1,20 @@
+{
+  "name": "keisei-portfolio",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "astro": "^5.18.2",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.1",
+    "typescript": "^7.0.2"
+  }
+}
