@@ -2,8 +2,6 @@ import * as THREE from 'three';
 
 interface SceneOptions {
   canvas: HTMLCanvasElement | null;
-  /** @deprecated unused — kept optional for call-site migration */
-  contactSection?: HTMLElement | null;
 }
 
 type Atmosphere = {

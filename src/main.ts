@@ -6,9 +6,8 @@ import { initNav } from './ui/nav';
 import { initHero } from './ui/hero';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#bg');
-const contactSection = document.getElementById('contact');
 
-initPortfolioScene({ canvas, contactSection });
+initPortfolioScene({ canvas });
 initHero();
 initReveal();
 initCursor();
