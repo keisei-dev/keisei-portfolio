@@ -1,4 +1,6 @@
 ---
+import SiteNav from '../components/SiteNav';
+import SkillsTags from '../components/SkillsTags';
 ---
 
 <!DOCTYPE html>
@@ -26,41 +28,7 @@
 
     <header class="site-header">
       <a class="logo" href="#">KEISEI</a>
-      <div class="nav-wrap">
-        <button
-          class="menu-toggle"
-          type="button"
-          aria-label="Open menu"
-          aria-expanded="false"
-          aria-controls="site-menu"
-        >
-          <span class="menu-toggle__label" data-menu-label>Menu</span>
-          <span class="menu-toggle__box" aria-hidden="true">
-            <span class="menu-toggle__bar"></span>
-            <span class="menu-toggle__bar"></span>
-          </span>
-        </button>
-        <div class="nav-backdrop" data-nav-backdrop hidden></div>
-        <nav class="site-nav" id="site-menu" aria-label="Primary" hidden>
-          <div class="site-nav__panel">
-            <header class="site-nav__head">
-              <p class="nav-label">Navigate</p>
-              <p class="nav-meta">Keisei Kondo</p>
-            </header>
-            <ul>
-              <li style="--i: 0"><a href="#about"><span class="nav-index">01</span><span class="nav-link-text">About</span></a></li>
-              <li style="--i: 1"><a href="#skills"><span class="nav-index">02</span><span class="nav-link-text">Skills</span></a></li>
-              <li style="--i: 2"><a href="#projects"><span class="nav-index">03</span><span class="nav-link-text">Projects</span></a></li>
-              <li style="--i: 3"><a href="#focus"><span class="nav-index">04</span><span class="nav-link-text">Focus</span></a></li>
-              <li style="--i: 4"><a href="#contact"><span class="nav-index">05</span><span class="nav-link-text">Contact</span></a></li>
-            </ul>
-            <footer class="site-nav__foot">
-              <span>Full-Stack Developer</span>
-              <a href="mailto:keisei20001206@gmail.com">Email</a>
-            </footer>
-          </div>
-        </nav>
-      </div>
+      <SiteNav client:load />
     </header>
 
     <main id="main-content">
@@ -125,20 +93,7 @@
           <header class="section-head" data-reveal>
             <h2 id="skills-heading">Skills</h2>
           </header>
-          <ul class="tags" role="list">
-            <li data-reveal style="--reveal-delay: 0.08s"><span class="tag">HTML</span></li>
-            <li data-reveal style="--reveal-delay: 0.12s"><span class="tag">CSS</span></li>
-            <li data-reveal style="--reveal-delay: 0.16s"><span class="tag">JavaScript</span></li>
-            <li data-reveal style="--reveal-delay: 0.20s"><span class="tag">TypeScript</span></li>
-            <li data-reveal style="--reveal-delay: 0.24s"><span class="tag">Astro</span></li>
-            <li data-reveal style="--reveal-delay: 0.28s"><span class="tag">React</span></li>
-            <li data-reveal style="--reveal-delay: 0.32s"><span class="tag">Node.js</span></li>
-            <li data-reveal style="--reveal-delay: 0.36s"><span class="tag">Express</span></li>
-            <li data-reveal style="--reveal-delay: 0.40s"><span class="tag">Three.js</span></li>
-            <li data-reveal style="--reveal-delay: 0.44s"><span class="tag">PostgreSQL</span></li>
-            <li data-reveal style="--reveal-delay: 0.48s"><span class="tag">Git</span></li>
-            <li data-reveal style="--reveal-delay: 0.52s"><span class="tag">GitHub</span></li>
-          </ul>
+          <SkillsTags />
         </div>
         <div class="marquee" aria-hidden="true">
           <div class="marquee-track">
