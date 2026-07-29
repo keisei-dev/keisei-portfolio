@@ -1,4 +1,3 @@
-import './styles/global.css';
 import { initPortfolioScene } from './scene/portfolioScene';
 import { initReveal } from './ui/reveal';
 import { initCursor } from './ui/cursor';
