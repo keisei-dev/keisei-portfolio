@@ -1,8 +1,10 @@
 # Keisei Kondo — Portfolio
 
-Space-themed portfolio for a **Full-Stack Developer**, built with **Astro**, **TypeScript**, and **Three.js**.
+Space-themed portfolio for a **Front-End Developer**, built with **Astro**, **React**, **TypeScript**, and **Three.js**.
 
-A black starfield runs behind the page. The hero title (“Full-Stack Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
+A black starfield runs behind the page. The hero title (“Front-End Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
+
+**Positioning:** Vancouver · open to full-time roles from January 2027 · JA / EN
 
 **Live feel:** black space · shooting stars · star-text hero · particle scatter · hamburger nav · scroll reveals
 
@@ -12,7 +14,7 @@ A black starfield runs behind the page. The hero title (“Full-Stack Developer�
 
 | Layer | Tech |
 | --- | --- |
-| Framework | [Astro](https://astro.build/) |
+| Framework | [Astro](https://astro.build/) + [React](https://react.dev/) islands |
 | Language | TypeScript |
 | 3D | [Three.js](https://threejs.org/) |
 | Markup / UI | Semantic HTML, CSS |
@@ -51,41 +53,45 @@ keisei-portfolio/
 │   └── favicon.svg
 └── src/
     ├── pages/
-    │   └── index.astro        # Page markup
-    ├── main.ts                # Entry: scene + UI wiring
+    │   └── index.astro           # Page markup
+    ├── components/
+    │   ├── SiteNav.tsx           # Hamburger nav (React island)
+    │   ├── SkillsTags.tsx        # Skills tags
+    │   └── ContactSignal.tsx     # Email CTA with signal pulse
+    ├── main.ts                   # Entry: scene + UI wiring
     ├── styles/
-    │   └── global.css         # Layout, typography, motion
+    │   ├── global.css            # @import barrel
+    │   └── partials/             # Section styles
     ├── ui/
-    │   ├── hero.ts            # Star-title canvas + hover scatter
-    │   ├── nav.ts             # Hamburger menu
-    │   ├── reveal.ts          # Scroll reveal & word animations
-    │   └── cursor.ts          # Custom cursor
+    │   ├── hero.ts               # Star-title canvas + hover scatter
+    │   ├── reveal.ts             # Scroll reveal & feature word scrub
+    │   └── cursor.ts             # Custom cursor
     └── scene/
-        └── portfolioScene.ts  # Three.js starfield / shooting stars
+        └── portfolioScene.ts     # Three.js starfield / shooting stars
 ```
 
 ---
 
 ## Features
 
-- **Astro** — static-first page with client TypeScript modules
+- **Astro + React** — static-first page with interactive islands
 - **3D space background** — layered twinkling stars, dust on scroll, occasional shooting stars
 - **Star-text hero** — constellation title; particles scatter away from the cursor
-- **Hamburger navigation** — About / Skills / Projects / Focus / Contact
-- **UI motion** — blur-to-sharp reveals, staggered word rise-ins, skills marquee
+- **Hamburger navigation** — About / Skills / Projects / Value / Contact
+- **UI motion** — blur-to-sharp reveals, staggered word rise-ins, skills marquee, scroll-scrubbed work copy
+- **Contact signal CTA** — pulse / streak hover on the email action
 - **Glossy navy accents** — CTAs and lead copy on a black base
-- **Contact links** — email, LinkedIn, GitHub
 - **Accessible basics** — skip link, semantic landmarks, `prefers-reduced-motion` support
 
 ---
 
 ## Sections
 
-1. **Hero** — role (star text), short pitch, CTAs  
-2. **About** — full-stack focus  
-3. **Skills** — HTML, CSS, TypeScript, Node.js, Express, Astro, PostgreSQL, Three.js, Git, GitHub  
-4. **Projects** — Interactive Portfolio (Astro · Three.js) + placeholders  
-5. **Focus** — what I’m building toward  
+1. **Hero** — Front-End Developer (star text), short pitch, CTAs · open from Jan 2027 · Vancouver  
+2. **About** — UI, interaction, and craft; TypeScript / React / CSS focus  
+3. **Skills** — HTML, CSS, JavaScript, TypeScript, Astro, React, Three.js, Vite, UI/UX, A11y, Git, GitHub  
+4. **Work** — featured case study: this Interactive Portfolio (Astro · Three.js · TypeScript · React)  
+5. **Value** — what I bring to a hiring team (clarity, craft, accessibility, motion)  
 6. **Contact**
    - Email: [keisei20001206@gmail.com](mailto:keisei20001206@gmail.com)
    - LinkedIn: [keisei-kondo](https://www.linkedin.com/in/keisei-kondo-0bab093a3)
