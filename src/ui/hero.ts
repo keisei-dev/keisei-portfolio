@@ -48,10 +48,12 @@ function buildStars(text: string, width: number, height: number, dpr: number): S
   if (!ctx) return [];
 
   const label = text.toUpperCase();
-  let fontPx = Math.min(sw * 0.255, sh * 0.94);
+  // Keep side padding so F/R stems + glow aren't clipped at canvas edges
+  const padX = sw * 0.06;
+  let fontPx = Math.min(sw * 0.3, sh * 0.88);
   ctx.font = `${fontPx}px "Bebas Neue", "Arial Narrow", sans-serif`;
-  ctx.letterSpacing = `${fontPx * 0.06}px`;
-  const maxTextW = sw * 0.98;
+  ctx.letterSpacing = `${fontPx * 0.04}px`;
+  const maxTextW = sw - padX * 2;
   const measured = ctx.measureText(label).width;
   if (measured > maxTextW) fontPx *= maxTextW / measured;
 
@@ -60,7 +62,7 @@ function buildStars(text: string, width: number, height: number, dpr: number): S
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `${fontPx}px "Bebas Neue", "Arial Narrow", sans-serif`;
-  ctx.letterSpacing = `${fontPx * 0.06}px`;
+  ctx.letterSpacing = `${fontPx * 0.04}px`;
   ctx.fillText(label, sw / 2, sh / 2);
 
   const { data } = ctx.getImageData(0, 0, sw, sh);
@@ -105,7 +107,7 @@ export function initHero() {
   if (!hero || !content || !canvas) return;
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const text = 'Full-Stack Developer';
+  const text = 'Front-End Developer';
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 

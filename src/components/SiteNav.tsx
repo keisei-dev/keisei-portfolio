@@ -89,7 +89,7 @@ export default function SiteNav() {
             ))}
           </ul>
           <footer className="site-nav__foot">
-            <span>Full-Stack Developer</span>
+            <span>Front-End Developer</span>
             <a href="mailto:keisei20001206@gmail.com">Email</a>
           </footer>
         </div>

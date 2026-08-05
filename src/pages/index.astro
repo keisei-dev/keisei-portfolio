@@ -13,9 +13,9 @@ import ContactSignal from '../components/ContactSignal';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Portfolio of Keisei Kondo — full-stack developer."
+      content="Keisei Kondo — front-end developer in Vancouver. Open to full-time roles from January 2027."
     />
-    <title>Keisei Kondo | Portfolio</title>
+    <title>Keisei Kondo | Front-End Developer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,25 +38,26 @@ import ContactSignal from '../components/ContactSignal';
         <div class="hero-content" data-hero>
           <p class="hero-eyebrow">
             <span class="hero-pulse" aria-hidden="true"></span>
-            Available for work
+            Open to full-time roles · Jan 2027 · Vancouver
           </p>
           <h1 id="hero-heading" class="hero-title">
-            <span class="visually-hidden">Full-Stack Developer</span>
+            <span class="visually-hidden">Front-End Developer</span>
             <canvas class="hero-star-title" data-hero-stars aria-hidden="true"></canvas>
           </h1>
           <div class="hero-lower" data-hero-line>
             <p class="hero-lead">
-              I design and ship complete web products —
-              <em>from API to interface.</em>
+              I build interfaces that feel
+              <em>intentional</em> — clear UI,
+              <em>smooth interaction</em>, production-ready detail.
             </p>
             <div class="hero-actions">
               <a class="hero-cta" href="#contact">
-                <span class="hero-cta__label">Start a project</span>
+                <span class="hero-cta__label">Contact me</span>
                 <span class="hero-cta__icon" aria-hidden="true">
                   <span class="hero-cta__chevron"></span>
                 </span>
               </a>
-              <a class="hero-link" href="#projects">Selected work</a>
+              <a class="hero-link" href="#projects">See my work</a>
             </div>
           </div>
         </div>
@@ -71,21 +72,43 @@ import ContactSignal from '../components/ContactSignal';
           <header class="section-head" data-reveal>
             <h2 id="about-heading">About</h2>
           </header>
-          <p class="lead prose-lead" data-words>
-            Full-stack developer across the whole stack.
-          </p>
-          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
-            <p class="copy prose-line" style="--l: 0">
-              I design and ship complete web products —
-              <span class="hl">REST &amp; API layers</span>,
-              <span class="hl">relational data models</span>, and
-              polished front-ends.
-            </p>
-            <p class="copy prose-line" style="--l: 1">
-              Comfortable owning a feature from
-              <span class="hl">schema to deployment</span>, I care about clean
-              architecture and interfaces that feel effortless to use.
-            </p>
+
+          <div class="about-grid">
+            <div class="about-rail" data-reveal style="--reveal-delay: 0.08s">
+              <p class="about-kicker">Keisei Kondo</p>
+              <p class="about-lead">Front-End Developer</p>
+              <p class="about-meta">
+                <span>Vancouver</span>
+                <span class="about-meta__sep" aria-hidden="true">·</span>
+                <span>JA / EN</span>
+                <span class="about-meta__sep" aria-hidden="true">·</span>
+                <span>From Jan 2027</span>
+              </p>
+              <ul class="about-focus" aria-label="Focus areas">
+                <li>UI</li>
+                <li>Interaction</li>
+                <li>Craft</li>
+              </ul>
+            </div>
+
+            <div
+              class="about-copy prose-copy"
+              data-prose-copy
+              data-reveal
+              style="--reveal-delay: 0.16s"
+            >
+              <p class="copy prose-line" style="--l: 0">
+                I turn product ideas into
+                <span class="hl">usable interfaces</span> with
+                <span class="hl">TypeScript</span>,
+                <span class="hl">React</span>, and careful CSS.
+              </p>
+              <p class="copy prose-line" style="--l: 1">
+                I care about what users feel —
+                <span class="hl">clarity</span>,
+                <span class="hl">accessibility</span>, and polish that holds up after ship.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -99,8 +122,8 @@ import ContactSignal from '../components/ContactSignal';
         </div>
         <div class="marquee" aria-hidden="true">
           <div class="marquee-track">
-            <span>Full-Stack ✦ Front-End ✦ Back-End ✦ APIs ✦ Databases ✦ TypeScript ✦ Node.js ✦ UI/UX ✦</span>
-            <span>Full-Stack ✦ Front-End ✦ Back-End ✦ APIs ✦ Databases ✦ TypeScript ✦ Node.js ✦ UI/UX ✦</span>
+            <span>Front-End ✦ UI/UX ✦ TypeScript ✦ React ✦ Astro ✦ CSS ✦ A11y ✦ Motion ✦</span>
+            <span>Front-End ✦ UI/UX ✦ TypeScript ✦ React ✦ Astro ✦ CSS ✦ A11y ✦ Motion ✦</span>
           </div>
         </div>
       </section>
@@ -110,7 +133,7 @@ import ContactSignal from '../components/ContactSignal';
           <header class="section-head" data-reveal>
             <h2 id="projects-heading">Projects</h2>
           </header>
-          <p class="lead" data-words>Full-stack builds, front to back.</p>
+          <p class="lead" data-words>Front-end work with care for detail.</p>
           <ul class="project-list" role="list">
             <li class="project-row" data-reveal style="--reveal-delay: 0.16s">
               <span class="project-name">Interactive Portfolio</span>
@@ -153,13 +176,16 @@ import ContactSignal from '../components/ContactSignal';
           <header class="section-head" data-reveal>
             <h2 id="contact-heading">Contact</h2>
           </header>
-          <p class="lead prose-lead" data-words>Let's build something together.</p>
+          <p class="lead prose-lead" data-words>Available for full-time roles from January 2027.</p>
           <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
             <p class="copy prose-line" style="--l: 0">
-              Looking for a <span class="hl">full-stack developer</span> for your next project?
+              Hiring a
+              <span class="hl">front-end developer</span> in
+              <span class="hl">Vancouver</span> or on a remote-friendly team?
             </p>
             <p class="copy prose-line" style="--l: 1">
-              Let's talk — I'll get back to you soon.
+              I'd love to hear about the role —
+              interviews, take-homes, and next steps welcome.
             </p>
           </div>
           <div class="contact-actions" data-reveal style="--reveal-delay: 0.16s">

@@ -5,10 +5,10 @@ const SKILLS = [
   'TypeScript',
   'Astro',
   'React',
-  'Node.js',
-  'Express',
   'Three.js',
-  'PostgreSQL',
+  'Vite',
+  'UI/UX',
+  'A11y',
   'Git',
   'GitHub',
 ] as const;
