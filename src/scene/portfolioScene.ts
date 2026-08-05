@@ -82,7 +82,7 @@ const ATMOSPHERES: Record<string, Atmosphere> = {
     twinkle: 1.05,
     thrust: 0.9,
   },
-  focus: {
+  value: {
     fog: 0.0065,
     exposure: 1.05,
     camZ: 5.35,
@@ -108,7 +108,7 @@ const ATMOSPHERES: Record<string, Atmosphere> = {
   },
 };
 
-const SECTION_ORDER = ['hero', 'about', 'skills', 'projects', 'focus', 'contact'] as const;
+const SECTION_ORDER = ['hero', 'about', 'skills', 'projects', 'value', 'contact'] as const;
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;

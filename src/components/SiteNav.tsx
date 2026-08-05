@@ -4,7 +4,7 @@ const LINKS = [
   { href: '#about', label: 'About', index: '01' },
   { href: '#skills', label: 'Skills', index: '02' },
   { href: '#projects', label: 'Projects', index: '03' },
-  { href: '#focus', label: 'Focus', index: '04' },
+  { href: '#value', label: 'Value', index: '04' },
   { href: '#contact', label: 'Contact', index: '05' },
 ] as const;
 
