@@ -128,26 +128,35 @@ import ContactSignal from '../components/ContactSignal';
         </div>
       </section>
 
-      <section class="panel" id="projects" aria-labelledby="projects-heading">
-        <div class="panel-body" data-panel>
+      <section class="panel panel--work" id="projects" aria-labelledby="projects-heading">
+        <div class="panel-body panel-body--projects panel-body--work" data-panel>
           <header class="section-head" data-reveal>
-            <h2 id="projects-heading">Projects</h2>
+            <h2 id="projects-heading">Work</h2>
           </header>
-          <p class="lead" data-words>Front-end work with care for detail.</p>
-          <ul class="project-list" role="list">
-            <li class="project-row" data-reveal style="--reveal-delay: 0.16s">
-              <span class="project-name">Interactive Portfolio</span>
-              <span class="project-meta"><span class="hl">Astro</span> · <span class="hl">Three.js</span> · real-time WebGL scene</span>
-            </li>
-            <li class="project-row project-row--empty" data-reveal style="--reveal-delay: 0.22s">
-              <span class="project-name">Coming soon</span>
-              <span class="project-meta">Project 02 — in the works</span>
-            </li>
-            <li class="project-row project-row--empty" data-reveal style="--reveal-delay: 0.28s">
-              <span class="project-name">Coming soon</span>
-              <span class="project-meta">Project 03 — in the works</span>
-            </li>
-          </ul>
+          <p class="lead" data-words>This site is the case study.</p>
+
+          <article class="project-feature" data-reveal data-feature style="--reveal-delay: 0.12s">
+            <div class="project-feature__head">
+              <div class="project-feature__meta">
+                <span class="project-feature__index" data-feature-word>01</span>
+                <span class="project-feature__status" data-feature-word>Live</span>
+              </div>
+              <h3 class="project-feature__title" data-feature-words>Interactive Portfolio</h3>
+              <p class="project-feature__role" data-feature-words>Solo front-end build</p>
+            </div>
+
+            <p class="project-feature__summary" data-feature-words>
+              WebGL starfield, interactive title, and scroll-driven motion —
+              built to show UI craft in the browser.
+            </p>
+
+            <ul class="project-feature__tags" aria-label="Technologies">
+              <li data-feature-word>Astro</li>
+              <li data-feature-word>Three.js</li>
+              <li data-feature-word>TypeScript</li>
+              <li data-feature-word>React</li>
+            </ul>
+          </article>
         </div>
       </section>
 
