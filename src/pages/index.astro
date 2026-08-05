@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav';
 import SkillsTags from '../components/SkillsTags';
+import ContactSignal from '../components/ContactSignal';
 ---
 
 <!DOCTYPE html>
@@ -162,9 +163,7 @@ import SkillsTags from '../components/SkillsTags';
             </p>
           </div>
           <div class="contact-actions" data-reveal style="--reveal-delay: 0.16s">
-            <a class="cta" href="mailto:keisei20001206@gmail.com"
-              >Send message<span class="cta-arrow" aria-hidden="true"> →</span></a
-            >
+            <ContactSignal client:load />
             <ul class="contact-links" role="list">
               <li>
                 <a
