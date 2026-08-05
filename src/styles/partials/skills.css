@@ -1,0 +1,136 @@
+.tags {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 16px;
+  margin-top: 8px;
+  list-style: none;
+  padding: 2px;
+  max-width: 52rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.tags li {
+  min-width: 0;
+  overflow: visible;
+}
+
+@property --tag-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.tag {
+  --tag-angle: 0deg;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 4.5rem;
+  box-sizing: border-box;
+  font-family: var(--font-m);
+  font-weight: 400;
+  font-size: clamp(1.1rem, 1.85vw, 1.4rem);
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  padding: 22px 12px;
+  border: 1px solid rgba(169, 198, 239, 0.22);
+  border-radius: 4px;
+  color: var(--text-2);
+  background: rgba(255, 255, 255, 0.03);
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+.tag::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--tag-angle),
+    transparent 0deg,
+    transparent 280deg,
+    rgba(210, 230, 255, 0.15) 300deg,
+    rgba(230, 242, 255, 0.95) 330deg,
+    rgba(210, 230, 255, 0.15) 350deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 0;
+}
+.tag:hover,
+.tag:focus-visible {
+  background: rgba(107, 149, 214, 0.1);
+  border-color: rgba(169, 198, 239, 0.35);
+  color: var(--text-1);
+}
+.tag:hover::before,
+.tag:focus-visible::before {
+  opacity: 1;
+  animation: tagOrbit 1.5s linear infinite;
+}
+.tag:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@keyframes tagOrbit {
+  to {
+    --tag-angle: 360deg;
+  }
+}
+
+
+/* Animated skills marquee */
+.marquee {
+  position: absolute; left: 0; right: 0; bottom: clamp(36px, 8vh, 80px);
+  overflow: hidden; width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  pointer-events: none;
+}
+.marquee-track {
+  display: flex; width: max-content;
+  animation: marquee 26s linear infinite;
+}
+.marquee-track span {
+  font-family: var(--font-h);
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  letter-spacing: 0.06em; white-space: nowrap; padding-right: 0.4em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(107, 149, 214, 0.45);
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (max-width: 900px) {
+  .tags {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tags {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}

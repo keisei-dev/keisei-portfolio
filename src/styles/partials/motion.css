@@ -1,0 +1,152 @@
+/* Scroll-reveal — crisp cascade (no soft blur mush) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+[data-reveal].in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* About: horizontal slide instead of default rise */
+.about-rail[data-reveal] {
+  transform: translate3d(-36px, 0, 0);
+}
+.about-copy[data-reveal] {
+  transform: translate3d(40px, 0, 0);
+}
+.about-rail[data-reveal].in-view,
+.about-copy[data-reveal].in-view {
+  opacity: 1;
+  transform: none;
+}
+@media (max-width: 720px) {
+  .about-rail[data-reveal] {
+    transform: translate3d(0, 16px, 0);
+  }
+  .about-copy[data-reveal] {
+    transform: translate3d(0, 22px, 0);
+  }
+}
+
+/* Title container: h2 owns the mask wipe */
+.section-head[data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.project-card[data-reveal],
+.project-feature[data-reveal] {
+  transform: translate3d(-48px, 0, 0);
+  clip-path: inset(0 0 0 12%);
+}
+.project-card[data-reveal].in-view,
+.project-feature[data-reveal].in-view {
+  transform: none;
+  clip-path: inset(0 0 0 0);
+  /* Reveal only — keep hover transitions out of this rule */
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.95s cubic-bezier(0.16, 1, 0.3, 1),
+    clip-path 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.panel-body.is-settled .project-card[data-reveal].in-view,
+.panel-body.is-settled .project-feature[data-reveal].in-view {
+  transition:
+    border-color 0.25s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.25s ease;
+  transition-delay: 0s;
+}
+
+.tags li[data-reveal] {
+  transform: translateY(22px) scale(0.92);
+  filter: none;
+}
+.tags li[data-reveal].in-view {
+  transform: none;
+  animation: tagSettle 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+@keyframes tagSettle {
+  0% { transform: translateY(22px) scale(0.92); opacity: 0; }
+  70% { transform: translateY(-2px) scale(1.02); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-content { opacity: 1; transform: none; filter: none; }
+  .hero-eyebrow,
+  [data-hero-line] {
+    opacity: 1; transform: none; filter: none; transition: none;
+  }
+  .hero-pulse,
+  .hero-scroll__line,
+  .hero.is-ready .cta { animation: none; }
+  .hero-scroll { opacity: 1; }
+  .site-nav,
+  .nav-backdrop,
+  .menu-toggle__bar,
+  .site-nav li,
+  .site-nav a { transition: none; }
+  .nav-wrap.is-open .site-nav li {
+    opacity: 1;
+    transform: none;
+  }
+  .panel-body,
+  .panel-body.in-view.is-settled { opacity: 1; transform: none; transition: none; }
+  .section-head.in-view h2::after { animation: none; }
+  [data-reveal] { opacity: 1; transform: none; filter: none; transition: none; clip-path: none; }
+  [data-words] .word-inner { filter: none; opacity: 1; transform: none; transition: none; }
+  .prose-copy .prose-line { opacity: 1; transform: none; transition: none; clip-path: none; }
+  .prose-copy .hl {
+    background-size: 100% 2px;
+    transition: none;
+  }
+  .about-rail,
+  .about-copy,
+  .about-copy .prose-line {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-cta::before { transition: none; transform: none; }
+  .section-head h2 {
+    filter: none; opacity: 1; letter-spacing: -0.02em; transform: none; transition: none;
+    clip-path: none;
+  }
+  .section-head h2::after { transform: none; transition: none; animation: none; }
+  .project-card:hover,
+  .project-feature:hover { transform: none; }
+  .feature-word,
+  [data-feature-word] {
+    --feature-t: 1;
+    opacity: 1;
+    transform: none;
+  }
+  .tags li[data-reveal].in-view { animation: none; }
+  .tag:hover::before,
+  .tag:focus-visible::before {
+    animation: none;
+    opacity: 0.7;
+    --tag-angle: 120deg;
+  }
+  [data-words].in-view,
+  .lead[data-words].in-view { animation: none; }
+  .marquee-track { animation: none; }
+  .value-ticker__track { animation: none; }
+}
+
+@media (max-width: 640px) {
+  .panel { padding: 60px 28px; }
+}
