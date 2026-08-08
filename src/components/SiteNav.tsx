@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const LINKS = [
   { href: '#about', label: 'About', index: '01' },
   { href: '#skills', label: 'Skills', index: '02' },
-  { href: '#projects', label: 'Projects', index: '03' },
+  { href: '#projects', label: 'Work', index: '03' },
   { href: '#value', label: 'Value', index: '04' },
   { href: '#contact', label: 'Contact', index: '05' },
 ] as const;

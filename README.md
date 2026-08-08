@@ -77,7 +77,7 @@ keisei-portfolio/
 - **Astro + React** — static-first page with interactive islands
 - **3D space background** — layered twinkling stars, dust on scroll, occasional shooting stars
 - **Star-text hero** — constellation title; particles scatter away from the cursor
-- **Hamburger navigation** — About / Skills / Projects / Value / Contact
+- **Hamburger navigation** — About / Skills / Work / Value / Contact
 - **UI motion** — blur-to-sharp reveals, staggered word rise-ins, skills marquee, scroll-scrubbed work copy
 - **Contact signal CTA** — pulse / streak hover on the email action
 - **Glossy navy accents** — CTAs and lead copy on a black base
