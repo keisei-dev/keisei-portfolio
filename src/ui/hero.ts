@@ -37,6 +37,7 @@ function centerStars(stars: Star[], width: number, height: number) {
 
 /**
  * Dense steel-star letterforms — bold uppercase sample for a masculine portfolio read.
+ * On narrow viewports, stack as two lines so the title stays readable.
  */
 function buildStars(text: string, width: number, height: number, dpr: number): Star[] {
   const sample = document.createElement('canvas');
@@ -47,23 +48,45 @@ function buildStars(text: string, width: number, height: number, dpr: number): S
   const ctx = sample.getContext('2d', { willReadFrequently: true });
   if (!ctx) return [];
 
-  const label = text.toUpperCase();
+  const stacked = width < 720;
+  const lines = stacked ? ['FRONT-END', 'DEVELOPER'] : [text.toUpperCase()];
   // Keep side padding so F/R stems + glow aren't clipped at canvas edges
-  const padX = sw * 0.06;
-  let fontPx = Math.min(sw * 0.3, sh * 0.88);
-  ctx.font = `${fontPx}px "Bebas Neue", "Arial Narrow", sans-serif`;
-  ctx.letterSpacing = `${fontPx * 0.04}px`;
+  const padX = sw * (stacked ? 0.08 : 0.06);
+  const padY = sh * (stacked ? 0.1 : 0.06);
   const maxTextW = sw - padX * 2;
-  const measured = ctx.measureText(label).width;
-  if (measured > maxTextW) fontPx *= maxTextW / measured;
+  const maxTextH = sh - padY * 2;
+  const lineGap = stacked ? 1.08 : 1;
 
+  let fontPx = stacked
+    ? Math.min(sw * 0.22, sh * 0.36)
+    : Math.min(sw * 0.3, sh * 0.88);
+
+  const applyFont = (size: number) => {
+    ctx.font = `${size}px "Bebas Neue", "Arial Narrow", sans-serif`;
+    ctx.letterSpacing = `${size * 0.04}px`;
+  };
+
+  applyFont(fontPx);
+  let widest = 0;
+  for (const line of lines) {
+    widest = Math.max(widest, ctx.measureText(line).width);
+  }
+  if (widest > maxTextW) fontPx *= maxTextW / widest;
+
+  applyFont(fontPx);
+  const blockH = fontPx * lineGap * lines.length;
+  if (blockH > maxTextH) fontPx *= maxTextH / blockH;
+
+  applyFont(fontPx);
   ctx.clearRect(0, 0, sw, sh);
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = `${fontPx}px "Bebas Neue", "Arial Narrow", sans-serif`;
-  ctx.letterSpacing = `${fontPx * 0.04}px`;
-  ctx.fillText(label, sw / 2, sh / 2);
+  const lineHeight = fontPx * lineGap;
+  const startY = sh / 2 - (lineHeight * (lines.length - 1)) / 2;
+  lines.forEach((line, i) => {
+    ctx.fillText(line, sw / 2, startY + i * lineHeight);
+  });
 
   const { data } = ctx.getImageData(0, 0, sw, sh);
   // Dense fill so the title reads as solid steel-star mass
@@ -285,9 +308,10 @@ export function initHero() {
   let tx = 0;
   let ty = 0;
   let pRaf = 0;
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
 
   const tick = () => {
-    if (!prefersReduced) {
+    if (!prefersReduced && finePointer) {
       tx += (mx - tx) * 0.06;
       ty += (my - ty) * 0.06;
       content.style.transform = `translate3d(${tx * 8}px, ${ty * 5}px, 0)`;
@@ -295,15 +319,17 @@ export function initHero() {
     pRaf = requestAnimationFrame(tick);
   };
 
-  window.addEventListener(
-    'mousemove',
-    (e) => {
-      mx = (e.clientX / window.innerWidth - 0.5) * 2;
-      my = (e.clientY / window.innerHeight - 0.5) * 2;
-    },
-    { passive: true },
-  );
-  pRaf = requestAnimationFrame(tick);
+  if (finePointer) {
+    window.addEventListener(
+      'mousemove',
+      (e) => {
+        mx = (e.clientX / window.innerWidth - 0.5) * 2;
+        my = (e.clientY / window.innerHeight - 0.5) * 2;
+      },
+      { passive: true },
+    );
+    pRaf = requestAnimationFrame(tick);
+  }
 
   const onScroll = () => {
     const hh = hero.offsetHeight || 1;

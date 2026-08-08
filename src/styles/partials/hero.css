@@ -310,3 +310,48 @@
   50% { transform: scaleY(1); opacity: 1; }
 }
 
+@media (max-width: 720px) {
+  .hero {
+    min-height: 100svh;
+    padding: 104px 20px 96px;
+  }
+  .hero-star-title {
+    height: clamp(220px, 58vw, 300px);
+  }
+  .hero-eyebrow {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+    gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    line-height: 1.45;
+    text-align: center;
+  }
+  .hero-lower {
+    margin-top: clamp(-36px, -8vw, -20px);
+    padding: 8px 0 4px;
+    width: 100%;
+  }
+  .hero-lead {
+    font-size: clamp(1.1rem, 4.6vw, 1.35rem);
+    max-width: 100%;
+  }
+  .hero-actions {
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+  }
+  .hero-cta {
+    width: min(100%, 20rem);
+    justify-content: space-between;
+  }
+  .hero-cta__label {
+    flex: 1;
+    justify-content: center;
+  }
+  .hero-scroll {
+    bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
