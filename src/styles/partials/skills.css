@@ -133,4 +133,17 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
+  .tag {
+    min-height: 3.75rem;
+    padding: 16px 8px;
+    font-size: clamp(0.85rem, 3.5vw, 1.05rem);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .marquee {
+    bottom: 28px;
+  }
+  .marquee-track span {
+    font-size: clamp(1.8rem, 10vw, 2.6rem);
+  }
 }

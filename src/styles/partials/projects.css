@@ -146,8 +146,35 @@
 }
 
 @media (max-width: 640px) {
+  .panel--work {
+    min-height: 160vh;
+    padding-top: 80px;
+    padding-bottom: 16vh;
+  }
+  .panel-body--work {
+    top: 72px;
+  }
   .project-feature {
-    padding: 28px 22px 24px;
+    padding: 24px 18px 22px;
+    border-radius: 12px;
+  }
+  .project-feature:hover {
+    transform: none;
+  }
+  .project-feature__title {
+    font-size: clamp(1.55rem, 7vw, 2rem);
+  }
+  .project-feature__summary {
+    font-size: clamp(1.15rem, 4.8vw, 1.35rem);
+    max-width: none;
+    margin-bottom: 22px;
+  }
+  .project-feature__tags {
+    gap: 8px;
+  }
+  .project-feature__tags li {
+    font-size: 0.78rem;
+    padding: 8px 10px;
   }
 }
 
