@@ -244,11 +244,17 @@ function makeStarField(
   return new THREE.Points(geo, material);
 }
 
+function isLiteDevice() {
+  return window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+}
+
 export function initPortfolioScene({ canvas }: SceneOptions) {
   if (!canvas) return;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const lite = isLiteDevice();
+  const maxDpr = lite ? 1.25 : 2;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor('#000000', 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -261,8 +267,8 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 300);
   camera.position.set(0, 0, 9.4);
 
-  scene.add(new THREE.AmbientLight('#121212', 0.35));
-  const key = new THREE.DirectionalLight('#ffffff', 0.2);
+  scene.add(new THREE.AmbientLight('#121212', lite ? 0.55 : 0.35));
+  const key = new THREE.DirectionalLight('#ffffff', lite ? 0.28 : 0.2);
   key.position.set(5, 8, 4);
   scene.add(key);
 
@@ -271,20 +277,20 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   scene.add(lightPrimary);
   const lightSecondary = new THREE.PointLight('#e8e8e8', 1.0, 55, 2.0);
   lightSecondary.position.set(9, -2, -16);
-  scene.add(lightSecondary);
+  if (!lite) scene.add(lightSecondary);
   const lightSoft = new THREE.PointLight('#d0d0d0', 0.85, 45, 2.2);
   lightSoft.position.set(0, 6, -25);
-  scene.add(lightSoft);
+  if (!lite) scene.add(lightSoft);
 
   const glow = createGlowTexture();
 
-  const starsFar = makeStarField(2400, 90, 0.15, '#a8a8a8', 0.5, glow, 8);
-  const starsMid = makeStarField(780, 55, 0.28, '#d8d8d8', 0.72, glow, 12);
-  const starsNear = makeStarField(170, 35, 0.52, '#ffffff', 0.88, glow, 16);
+  const starsFar = makeStarField(lite ? 800 : 2400, 90, 0.15, '#a8a8a8', 0.5, glow, 8);
+  const starsMid = makeStarField(lite ? 260 : 780, 55, 0.28, '#d8d8d8', 0.72, glow, 12);
+  const starsNear = makeStarField(lite ? 70 : 170, 35, 0.52, '#ffffff', 0.88, glow, 16);
   scene.add(starsFar, starsMid, starsNear);
   const starLayers = [starsFar, starsMid, starsNear];
 
-  const brightCount = 60;
+  const brightCount = lite ? 22 : 60;
   const brightGeo = new THREE.BufferGeometry();
   const bp = new Float32Array(brightCount * 3);
   const brightPhase = new Float32Array(brightCount);
@@ -338,7 +344,7 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   scene.add(brightStars);
   const brightAttr = brightGeo.getAttribute('position') as THREE.BufferAttribute;
 
-  const dustCount = 120;
+  const dustCount = lite ? 36 : 120;
   const dustGeo = new THREE.BufferGeometry();
   const dustPos = new Float32Array(dustCount * 3);
   const dustSpeed = new Float32Array(dustCount);
@@ -365,7 +371,7 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   scene.add(dust);
 
   // Sparse streaks — subtle speed cue only
-  const streakCount = 24;
+  const streakCount = lite ? 0 : 24;
   const streakGeo = new THREE.BufferGeometry();
   const streakPos = new Float32Array(streakCount * 3);
   const streakSpeed = new Float32Array(streakCount);
@@ -389,7 +395,7 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     sizeAttenuation: true,
   });
   const streaks = new THREE.Points(streakGeo, streakMat);
-  scene.add(streaks);
+  if (streakCount > 0) scene.add(streaks);
 
   type ShootingStar = {
     line: THREE.Line;
@@ -402,9 +408,10 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     trail: Float32Array;
   };
 
-  const trailLen = 28;
+  const trailLen = lite ? 12 : 28;
   const shootingStars: ShootingStar[] = [];
-  for (let i = 0; i < 3; i++) {
+  const shootingBudget = lite ? 1 : 3;
+  for (let i = 0; i < shootingBudget; i++) {
     const trail = new Float32Array(trailLen * 3);
     const lineGeo = new THREE.BufferGeometry();
     lineGeo.setAttribute('position', new THREE.BufferAttribute(trail, 3));
@@ -492,8 +499,9 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     if (nextMeteor <= 0) {
       const idle = shootingStars.find((s) => !s.active);
       if (idle) spawnShootingStar(idle);
-      nextMeteor = (4 + Math.random() * 10) * meteorMul;
-      if (Math.random() < 0.18 / Math.max(meteorMul, 0.4)) {
+      nextMeteor = (lite ? 10 : 4) + Math.random() * (lite ? 14 : 10);
+      nextMeteor *= meteorMul;
+      if (!lite && Math.random() < 0.18 / Math.max(meteorMul, 0.4)) {
         nextMeteor = 0.35 + Math.random() * 0.5;
       }
     }
@@ -589,24 +597,35 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     measureSections();
   }
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener(
-    'mousemove',
-    (e) => {
-      mx = (e.clientX / window.innerWidth - 0.5) * 2;
-      my = (e.clientY / window.innerHeight - 0.5) * 2;
-    },
-    { passive: true },
-  );
+  if (!lite) {
+    window.addEventListener(
+      'mousemove',
+      (e) => {
+        mx = (e.clientX / window.innerWidth - 0.5) * 2;
+        my = (e.clientY / window.innerHeight - 0.5) * 2;
+      },
+      { passive: true },
+    );
+  }
   measureSections();
 
   const timer = new THREE.Timer();
   timer.connect(document);
   let t = 0;
+  let frame = 0;
+  let lastFrameMs = 0;
+  const minFrameMs = lite ? 1000 / 30 : 0;
   const dustAttr = dustGeo.getAttribute('position') as THREE.BufferAttribute;
   const streakAttr = streakGeo.getAttribute('position') as THREE.BufferAttribute;
 
   function animate(timestamp?: number) {
     requestAnimationFrame(animate);
+    if (document.hidden) return;
+    const now = timestamp ?? performance.now();
+    if (lite && now - lastFrameMs < minFrameMs) return;
+    lastFrameMs = now;
+    frame += 1;
+
     timer.update(timestamp);
     const dt = Math.min(timer.getDelta(), 0.05);
     t += dt;
@@ -637,8 +656,10 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     smy = lerp(smy, my, 1 - Math.exp(-dt * 4));
 
     dustMat.opacity = atmo.dustOp * (1.25 + Math.min(speed, 1.5) * 0.22);
-    streakMat.opacity = Math.min(0.42, 0.1 + speed * 0.16);
-    streakMat.size = 0.14 + speed * 0.07;
+    if (streakCount > 0) {
+      streakMat.opacity = Math.min(0.42, 0.1 + speed * 0.16);
+      streakMat.size = 0.14 + speed * 0.07;
+    }
 
     const parallaxX = smx * 1.5 * atmo.parallax;
     const parallaxY = -smy * 1.0 * atmo.parallax;
@@ -687,18 +708,21 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     brightStars.position.z = breath * 0.7;
     brightStars.scale.setScalar(1 + speed * 0.055 + breath * 0.035);
 
-    const bArr = brightAttr.array as Float32Array;
-    for (let i = 0; i < brightCount; i++) {
-      const ph = brightPhase[i];
-      const sp = brightSpeed[i];
-      bArr[i * 3] = brightBase[i * 3] + Math.sin(t * sp * 0.15 + ph) * 0.28 * drift;
-      bArr[i * 3 + 1] = brightBase[i * 3 + 1] + Math.cos(t * sp * 0.12 + ph) * 0.22 * drift;
-      bArr[i * 3 + 2] =
-        brightBase[i * 3 + 2] +
-        Math.sin(travel * 0.035 + ph) * 2.2 * rush +
-        Math.sin(t * 0.16 + ph) * 0.4 * drift;
+    // Bright-star CPU path is expensive — skip every other frame on lite devices
+    if (!lite || frame % 2 === 0) {
+      const bArr = brightAttr.array as Float32Array;
+      for (let i = 0; i < brightCount; i++) {
+        const ph = brightPhase[i];
+        const sp = brightSpeed[i];
+        bArr[i * 3] = brightBase[i * 3] + Math.sin(t * sp * 0.15 + ph) * 0.28 * drift;
+        bArr[i * 3 + 1] = brightBase[i * 3 + 1] + Math.cos(t * sp * 0.12 + ph) * 0.22 * drift;
+        bArr[i * 3 + 2] =
+          brightBase[i * 3 + 2] +
+          Math.sin(travel * 0.035 + ph) * 2.2 * rush +
+          Math.sin(t * 0.16 + ph) * 0.4 * drift;
+      }
+      brightAttr.needsUpdate = true;
     }
-    brightAttr.needsUpdate = true;
 
     const layerTargetOp = [atmo.farOp, atmo.midOp, atmo.nearOp];
     starLayers.forEach((layer, i) => {
@@ -739,26 +763,28 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     }
     dustAttr.needsUpdate = true;
 
-    const sarr = streakAttr.array as Float32Array;
-    const streakRush = warp * dt * (4.5 + speed * 3.2);
-    for (let i = 0; i < streakCount; i++) {
-      const ix = i * 3;
-      const iy = i * 3 + 1;
-      const iz = i * 3 + 2;
-      sarr[iz] += streakSpeed[i] * streakRush * 0.07;
-      const nearness = Math.max(0, Math.min(1, (sarr[iz] + 36) / 40));
-      const flare = 1 + dt * nearness * (1.0 + speed * 0.55);
-      sarr[ix] *= flare;
-      sarr[iy] *= flare;
-      if (sarr[iz] > 4) {
-        const ang = Math.random() * Math.PI * 2;
-        const rad = 3.2 + Math.random() * 6;
-        sarr[ix] = Math.cos(ang) * rad;
-        sarr[iy] = Math.sin(ang) * rad * 0.7;
-        sarr[iz] = -40 - Math.random() * 16;
+    if (streakCount > 0) {
+      const sarr = streakAttr.array as Float32Array;
+      const streakRush = warp * dt * (4.5 + speed * 3.2);
+      for (let i = 0; i < streakCount; i++) {
+        const ix = i * 3;
+        const iy = i * 3 + 1;
+        const iz = i * 3 + 2;
+        sarr[iz] += streakSpeed[i] * streakRush * 0.07;
+        const nearness = Math.max(0, Math.min(1, (sarr[iz] + 36) / 40));
+        const flare = 1 + dt * nearness * (1.0 + speed * 0.55);
+        sarr[ix] *= flare;
+        sarr[iy] *= flare;
+        if (sarr[iz] > 4) {
+          const ang = Math.random() * Math.PI * 2;
+          const rad = 3.2 + Math.random() * 6;
+          sarr[ix] = Math.cos(ang) * rad;
+          sarr[iy] = Math.sin(ang) * rad * 0.7;
+          sarr[iz] = -40 - Math.random() * 16;
+        }
       }
+      streakAttr.needsUpdate = true;
     }
-    streakAttr.needsUpdate = true;
 
     const targetFov = atmo.fov + scrollBoost * 1.8 + speed * 2.4;
     fovSmoothed = lerp(fovSmoothed, targetFov, 1 - Math.exp(-dt * 2.6));
@@ -775,8 +801,10 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     camera.lookAt(smx * 0.3 * atmo.parallax, -smy * 0.18 * atmo.parallax, -28 - speed * 4);
 
     lightPrimary.intensity = 1.05 + Math.sin(t * 0.55) * 0.35 + speed * 0.06;
-    lightSecondary.intensity = 0.9 + Math.sin(t * 0.42 + 1) * 0.28;
-    lightSoft.intensity = 0.75 + Math.sin(t * 0.35 + 2) * 0.22;
+    if (!lite) {
+      lightSecondary.intensity = 0.9 + Math.sin(t * 0.42 + 1) * 0.28;
+      lightSoft.intensity = 0.75 + Math.sin(t * 0.35 + 2) * 0.22;
+    }
 
     updateShootingStars(dt);
 
@@ -785,8 +813,11 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   animate();
 
   function onResize() {
+    const nextLite = isLiteDevice();
+    const nextDpr = Math.min(window.devicePixelRatio || 1, nextLite ? 1.25 : 2);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    renderer.setPixelRatio(nextDpr);
     renderer.setSize(window.innerWidth, window.innerHeight);
     measureSections();
   }
