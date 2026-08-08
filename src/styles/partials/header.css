@@ -117,7 +117,7 @@ html.nav-open {
   right: 0;
   bottom: 0;
   z-index: 230;
-  width: min(420px, 100vw);
+  width: min(420px, 100%);
   padding: 0;
   border: 0;
   border-left: 1px solid rgba(169, 198, 239, 0.18);
@@ -291,7 +291,7 @@ main {
     font-size: 1.15rem;
   }
   .site-nav {
-    width: 100vw;
+    width: 100%;
     border-left: 0;
   }
   .site-nav__panel {

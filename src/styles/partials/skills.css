@@ -98,10 +98,17 @@
 }
 
 
+/* Keep the wide marquee track from expanding page width */
+#skills {
+  overflow-x: clip;
+}
+
 /* Animated skills marquee */
 .marquee {
   position: absolute; left: 0; right: 0; bottom: clamp(36px, 8vh, 80px);
-  overflow: hidden; width: 100%;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
   pointer-events: none;
