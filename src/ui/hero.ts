@@ -38,13 +38,14 @@ function centerStars(stars: Star[], width: number, height: number) {
 /**
  * Dense steel-star letterforms — bold uppercase sample for a masculine portfolio read.
  * On narrow viewports, stack as two lines so the title stays readable.
+ * `compact` = mobile-friendly density (stars, but not a white smear).
  */
 function buildStars(
   text: string,
   width: number,
   height: number,
   dpr: number,
-  sparse = false,
+  compact = false,
 ): Star[] {
   const sample = document.createElement('canvas');
   const sw = Math.max(2, Math.floor(width * dpr));
@@ -64,12 +65,12 @@ function buildStars(
   const lineGap = stacked ? 1.08 : 1;
 
   let fontPx = stacked
-    ? Math.min(sw * 0.22, sh * 0.36)
+    ? Math.min(sw * (compact ? 0.27 : 0.22), sh * (compact ? 0.4 : 0.36))
     : Math.min(sw * 0.3, sh * 0.88);
 
   const applyFont = (size: number) => {
     ctx.font = `${size}px "Bebas Neue", "Arial Narrow", sans-serif`;
-    ctx.letterSpacing = `${size * 0.04}px`;
+    ctx.letterSpacing = `${size * (compact ? 0.03 : 0.04)}px`;
   };
 
   applyFont(fontPx);
@@ -95,19 +96,23 @@ function buildStars(
   });
 
   const { data } = ctx.getImageData(0, 0, sw, sh);
-  // Dense on desktop; sparser sampling on lite / mobile devices
-  const step = Math.max(2, Math.round(dpr * (sparse ? 3.4 : 1.65)));
+  // Compact: dense enough to read as stars-as-type, small enough to avoid white mush
+  const step = Math.max(2, Math.round(dpr * (compact ? 2.15 : 1.65)));
   const stars: Star[] = [];
 
   for (let y = 0; y < sh; y += step) {
     for (let x = 0; x < sw; x += step) {
       const a = data[(y * sw + x) * 4 + 3];
       if (a < 150) continue;
-      const jx = (Math.random() - 0.5) * step * 0.4;
-      const jy = (Math.random() - 0.5) * step * 0.4;
+      const jx = (Math.random() - 0.5) * step * (compact ? 0.28 : 0.4);
+      const jy = (Math.random() - 0.5) * step * (compact ? 0.28 : 0.4);
       const px = (x + jx) / dpr;
       const py = (y + jy) / dpr;
-      const bright = Math.random() > (sparse ? 0.94 : 0.88);
+      const bright = Math.random() > (compact ? 0.9 : 0.88);
+      // Desktop keeps the original star sizes; compact only shrinks for mobile density.
+      const r = compact
+        ? ((bright ? 1.2 : 0.65) + Math.random() * (bright ? 0.85 : 0.7)) * 0.82
+        : (bright ? 1.35 : 0.7) + Math.random() * (bright ? 1.1 : 0.95);
       stars.push({
         ox: px,
         oy: py,
@@ -115,10 +120,10 @@ function buildStars(
         y: py,
         vx: 0,
         vy: 0,
-        r: (bright ? 1.35 : 0.7) + Math.random() * (bright ? 1.1 : 0.95),
+        r,
         phase: Math.random() * Math.PI * 2,
         speed: bright ? 0.8 + Math.random() * 1.4 : 1.6 + Math.random() * 3.4,
-        delay: Math.random() * (sparse ? 0.45 : 0.75),
+        delay: Math.random() * (compact ? 0.4 : 0.75),
         bright,
       });
     }
@@ -136,7 +141,9 @@ export function initHero() {
   if (!hero || !content || !canvas) return;
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const lite = window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+  // Hero title: viewport-width only — never share mobile look with desktop via pointer:coarse
+  const isMobileHero = () => window.matchMedia('(max-width: 720px)').matches;
+  let mobile = isMobileHero();
   const text = 'Front-End Developer';
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -148,23 +155,31 @@ export function initHero() {
   let pointerX = 0;
   let pointerY = 0;
   let frozen = false;
+  let cssW = 1;
+  let cssH = 1;
 
   const layout = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 2);
+    mobile = isMobileHero();
+    const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
     canvas.style.width = '100%';
     canvas.style.height = '';
-    const cssW = Math.max(1, canvas.clientWidth || content.clientWidth);
-    const cssH = Math.max(1, canvas.clientHeight);
+    cssW = Math.max(1, canvas.clientWidth || content.clientWidth);
+    cssH = Math.max(1, canvas.clientHeight);
+    // Mobile only: lock the CSS box so the denser bitmap doesn't stretch
+    if (mobile) {
+      canvas.style.width = `${cssW}px`;
+      canvas.style.height = `${cssH}px`;
+    }
     canvas.width = Math.floor(cssW * dpr);
     canvas.height = Math.floor(cssH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    stars = buildStars(text, cssW, cssH, dpr, lite);
+    stars = buildStars(text, cssW, cssH, dpr, mobile);
     frozen = false;
   };
 
-  /** Stars flee the cursor, then spring back home. */
+  /** Stars flee the cursor, then spring back home. Desktop only. */
   const updatePhysics = (t: number) => {
-    if (prefersReduced || lite) {
+    if (prefersReduced || mobile) {
       for (const s of stars) {
         s.x = s.ox;
         s.y = s.oy;
@@ -219,21 +234,21 @@ export function initHero() {
   };
 
   const draw = (now: number) => {
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    ctx.clearRect(0, 0, w, h);
+    ctx.clearRect(0, 0, cssW, cssH);
     const t = (now - start) / 1000;
     const appear =
-      prefersReduced || frozen ? 1 : Math.min(1, Math.max(0, (now - readyAt) / 1000));
+      prefersReduced || frozen
+        ? 1
+        : Math.min(1, Math.max(0, (now - readyAt) / (mobile ? 900 : 1000)));
 
-    if (!lite) updatePhysics(t);
+    if (!mobile) updatePhysics(t);
 
     for (const s of stars) {
       const local = Math.min(1, Math.max(0, (appear - s.delay * 0.5) / 0.4));
       if (local <= 0) continue;
 
       const twinkle =
-        prefersReduced || lite
+        prefersReduced || mobile
           ? 0.92
           : s.bright
             ? 0.7 + 0.3 * Math.pow(0.5 + 0.5 * Math.sin(t * s.speed + s.phase), 1.6)
@@ -242,10 +257,10 @@ export function initHero() {
       const boost = pointerActive ? 1.12 : 1;
       const alpha = local * twinkle * boost;
       const r = s.r * (0.8 + twinkle * 0.5) * (pointerActive ? 1.06 : 1);
-      const core = Math.max(0.55, r * (s.bright ? 0.55 : 0.42));
+      const core = Math.max(mobile ? 0.45 : 0.55, r * (s.bright ? 0.55 : 0.42));
 
-      // Glow only on bright anchors — skip expensive gradients on lite
-      if (s.bright && !lite) {
+      // Desktop: soft gradient glow. Mobile: small solid halo only (keeps star look, no mush).
+      if (s.bright && !mobile) {
         const glowR = r * 4.2;
         const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR);
         g.addColorStop(0, `rgba(255,255,255,${Math.min(1, 0.98 * alpha)})`);
@@ -257,9 +272,9 @@ export function initHero() {
         ctx.arc(s.x, s.y, glowR, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        ctx.fillStyle = `rgba(210,220,232,${(lite ? 0.3 : 0.22) * alpha})`;
+        ctx.fillStyle = `rgba(210,220,232,${(mobile ? 0.28 : 0.22) * alpha})`;
         ctx.beginPath();
-        ctx.arc(s.x, s.y, r * (lite ? 1.8 : 2.2), 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, r * (mobile ? 1.65 : 2.2), 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -272,14 +287,19 @@ export function initHero() {
 
   let raf = 0;
   const loop = (now: number) => {
-    draw(now);
-    // Mobile: play a short intro, then freeze to a static title
-    if (lite && readyAt && now - readyAt > 1400) {
-      frozen = true;
+    // Mobile: short fade-in only, then fully static (no cursor physics / twinkle loop)
+    if (mobile) {
       draw(now);
-      raf = 0;
+      if (readyAt && now - readyAt > 1100) {
+        frozen = true;
+        draw(now);
+        raf = 0;
+        return;
+      }
+      raf = requestAnimationFrame(loop);
       return;
     }
+    draw(now);
     raf = requestAnimationFrame(loop);
   };
 
@@ -316,7 +336,7 @@ export function initHero() {
   };
 
   const finePointer = window.matchMedia('(pointer: fine)').matches;
-  if (!lite && finePointer) {
+  if (!mobile && finePointer) {
     canvas.addEventListener('pointerenter', (e) => setPointer(e, true));
     canvas.addEventListener('pointermove', (e) => setPointer(e, true));
     canvas.addEventListener('pointerleave', () => {
@@ -331,7 +351,7 @@ export function initHero() {
   let pRaf = 0;
 
   const tick = () => {
-    if (!prefersReduced && finePointer) {
+    if (!prefersReduced && !mobile && finePointer) {
       tx += (mx - tx) * 0.06;
       ty += (my - ty) * 0.06;
       content.style.transform = `translate3d(${tx * 8}px, ${ty * 5}px, 0)`;
@@ -339,7 +359,7 @@ export function initHero() {
     pRaf = requestAnimationFrame(tick);
   };
 
-  if (!lite && finePointer) {
+  if (!mobile && finePointer) {
     window.addEventListener(
       'mousemove',
       (e) => {
@@ -365,7 +385,7 @@ export function initHero() {
     resizeTimer = window.setTimeout(() => {
       if (raf) cancelAnimationFrame(raf);
       layout();
-      if (prefersReduced || lite) {
+      if (prefersReduced || mobile) {
         frozen = true;
         draw(performance.now());
         return;

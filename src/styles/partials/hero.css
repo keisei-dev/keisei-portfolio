@@ -316,7 +316,7 @@
     padding: 104px 20px 96px;
   }
   .hero-star-title {
-    height: clamp(220px, 58vw, 300px);
+    height: clamp(260px, 68vw, 340px);
   }
   .hero-eyebrow {
     flex-wrap: wrap;
@@ -329,7 +329,7 @@
     text-align: center;
   }
   .hero-lower {
-    margin-top: clamp(-36px, -8vw, -20px);
+    margin-top: clamp(-28px, -6vw, -12px);
     padding: 8px 0 4px;
     width: 100%;
   }
