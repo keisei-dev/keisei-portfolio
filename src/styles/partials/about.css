@@ -46,22 +46,22 @@
 .about-focus {
   margin: 0;
   font-family: var(--font-m);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
+  font-size: clamp(0.88rem, 1.35vw, 1rem);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .about-meta {
-  margin-top: 8px;
-  color: var(--text-3);
+  margin-top: 10px;
+  color: rgba(200, 218, 242, 0.78);
 }
 
 .about-focus {
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid rgba(169, 198, 239, 0.18);
-  color: var(--text-2);
+  color: rgba(220, 232, 248, 0.88);
 }
 
 .about-copy {
@@ -138,8 +138,8 @@
   }
   .about-meta,
   .about-focus {
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
+    font-size: clamp(0.84rem, 3.4vw, 0.95rem);
+    letter-spacing: 0.08em;
   }
   .about-focus {
     margin-top: 12px;
