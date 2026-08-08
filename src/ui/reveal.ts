@@ -112,7 +112,7 @@ function prepareFeatureWords() {
   });
 }
 
-/** Ease Work card words in from the left, one after another, scrubbed by section scroll. */
+/** Ease Work card words in from the left, scrubbed by scroll on desktop only. */
 function initFeatureScroll() {
   const section = document.getElementById('projects');
   const feature = document.querySelector<HTMLElement>('[data-feature]');
@@ -123,12 +123,18 @@ function initFeatureScroll() {
   );
   if (!words.length) return;
 
+  const mobileMq = window.matchMedia('(max-width: 720px)');
   const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
   const easeOut = (t: number) => 1 - (1 - t) ** 2.6;
 
   let targetProgress = 0;
   let smoothProgress = 0;
   let raf = 0;
+  let scrubbing = false;
+
+  const showAll = () => {
+    words.forEach((word) => word.style.setProperty('--feature-t', '1'));
+  };
 
   const readTarget = () => {
     const vh = window.innerHeight || 1;
@@ -148,6 +154,7 @@ function initFeatureScroll() {
   };
 
   const tick = () => {
+    if (!scrubbing) return;
     readTarget();
     // Critically-damped-ish follow — smooth even on wheel/trackpad spikes
     smoothProgress += (targetProgress - smoothProgress) * 0.085;
@@ -158,25 +165,38 @@ function initFeatureScroll() {
     raf = requestAnimationFrame(tick);
   };
 
+  const startScrub = () => {
+    if (scrubbing) return;
+    scrubbing = true;
+    readTarget();
+    smoothProgress = targetProgress;
+    paint();
+    raf = requestAnimationFrame(tick);
+  };
+
+  const stopScrub = () => {
+    scrubbing = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    showAll();
+  };
+
+  const syncMode = () => {
+    if (mobileMq.matches) stopScrub();
+    else startScrub();
+  };
+
   window.addEventListener(
     'scroll',
     () => {
-      readTarget();
+      if (scrubbing) readTarget();
     },
     { passive: true },
   );
-  window.addEventListener(
-    'resize',
-    () => {
-      readTarget();
-    },
-    { passive: true },
-  );
+  window.addEventListener('resize', syncMode, { passive: true });
+  mobileMq.addEventListener?.('change', syncMode);
 
-  readTarget();
-  smoothProgress = targetProgress;
-  paint();
-  raf = requestAnimationFrame(tick);
+  syncMode();
 
   // Keep reference so the loop isn't tree-shaken in edge bundlers
   void raf;

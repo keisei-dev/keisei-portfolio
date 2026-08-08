@@ -145,16 +145,27 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
+  /* Shorter, readable Work block — no long scroll-scrub runway */
   .panel--work {
-    min-height: 160vh;
-    padding-top: 80px;
-    padding-bottom: 16vh;
+    min-height: auto;
+    align-items: center;
+    padding-top: 72px;
+    padding-bottom: 72px;
   }
   .panel-body--work {
-    top: 72px;
+    position: static;
+    top: auto;
+  }
+  .feature-word,
+  [data-feature-word] {
+    --feature-t: 1;
+    opacity: 1;
+    transform: none;
+    will-change: auto;
   }
   .project-feature {
+    margin-top: 24px;
     padding: 24px 18px 22px;
     border-radius: 12px;
   }
