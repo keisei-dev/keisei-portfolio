@@ -42,15 +42,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-.about-lead {
-  margin: 0;
-  font-family: var(--font-m);
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(210, 226, 248, 0.78);
-}
-
 .about-meta,
 .about-focus {
   margin: 0;
@@ -62,7 +53,7 @@
 }
 
 .about-meta {
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--text-3);
 }
 
@@ -144,9 +135,6 @@
   }
   .about-name {
     font-size: clamp(1.9rem, 8vw, 2.4rem);
-  }
-  .about-lead {
-    letter-spacing: 0.12em;
   }
   .about-meta,
   .about-focus {
