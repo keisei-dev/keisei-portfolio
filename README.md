@@ -6,6 +6,8 @@ A black starfield runs behind the page. The hero title (鈥淔ront-End Developer鈥
 
 **Positioning:** Vancouver 路 open to full-time roles from January 2027 路 JA / EN
 
+**Live site:** [joyful-yeot-c495a0.netlify.app](https://joyful-yeot-c495a0.netlify.app)
+
 **Live feel:** black space 路 shooting stars 路 star-text hero 路 particle scatter 路 hamburger nav 路 scroll reveals
 
 ---
