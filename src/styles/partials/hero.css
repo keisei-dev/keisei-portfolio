@@ -53,7 +53,7 @@
   width: 100%;
   max-width: min(1680px, 100%);
   margin-inline: auto;
-  height: clamp(200px, 26vw, 320px);
+  height: clamp(200px, 28vw, 340px);
   pointer-events: auto;
   touch-action: none;
   cursor: none;
@@ -321,7 +321,7 @@
     gap: 0;
   }
   .hero-star-title {
-    height: clamp(168px, 48vw, 196px);
+    height: clamp(148px, 42vw, 172px);
   }
   .hero-eyebrow {
     flex-wrap: wrap;

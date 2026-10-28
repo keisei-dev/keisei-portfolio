@@ -35,10 +35,10 @@ function centerStars(stars: Star[], width: number, height: number) {
   }
 }
 
-/** Title lines. Narrow screens stack three short rows so the lead still fits. */
+/** One line on desktop. Two short rows on narrow screens so the lead still fits. */
 function titleLines(width: number): string[] {
-  if (width < 720) return ['FRONT-END', 'FULL-STACK', 'DEVELOPER'];
-  return ['FRONT-END / FULL-STACK', 'DEVELOPER'];
+  if (width < 720) return ['FULL-STACK', 'DEVELOPER'];
+  return ['FULL-STACK DEVELOPER'];
 }
 
 /**
@@ -56,14 +56,17 @@ function buildStars(width: number, height: number, dpr: number, compact = false)
 
   const lines = titleLines(width);
   const narrow = width < 720;
+  const single = lines.length === 1;
   // Keep side padding so F/R stems + glow aren't clipped at canvas edges
-  const padX = sw * (narrow ? 0.07 : 0.05);
-  const padY = sh * (narrow ? 0.07 : 0.08);
+  const padX = sw * (narrow ? 0.08 : 0.055);
+  const padY = sh * (single ? 0.1 : 0.1);
   const maxTextW = sw - padX * 2;
   const maxTextH = sh - padY * 2;
-  const lineGap = narrow ? 1.02 : 1.05;
+  const lineGap = single ? 1 : 1.06;
 
-  let fontPx = Math.min(sw * (compact ? 0.32 : 0.2), sh * (compact ? 0.46 : 0.46));
+  let fontPx = single
+    ? Math.min(sw * 0.3, sh * 0.86)
+    : Math.min(sw * (compact ? 0.36 : 0.24), sh * (compact ? 0.5 : 0.48));
 
   const applyFont = (size: number) => {
     ctx.font = `${size}px "Bebas Neue", "Arial Narrow", sans-serif`;

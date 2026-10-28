@@ -1,8 +1,8 @@
 # Keisei Kondo — Portfolio
 
-Space-themed portfolio for a **Front-End / Full-Stack Developer**, built with **Astro**, **React**, **TypeScript**, and **Three.js**.
+Space-themed portfolio for a **Full-Stack Developer**, built with **Astro**, **React**, **TypeScript**, and **Three.js**.
 
-A black starfield runs behind the page. The hero title (“Front-End / Full-Stack Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
+A black starfield runs behind the page. The hero title (“Full-Stack Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
 
 **Positioning:** Vancouver · open to full-time roles from January 2027 · Japanese (native) / English
 
@@ -92,7 +92,7 @@ keisei-portfolio/
 
 ## Sections
 
-1. **Hero** — Front-End / Full-Stack Developer (star text), short pitch, contact / work / resume · open from Jan 2027 · Vancouver  
+1. **Hero** — Full-Stack Developer (star text), short pitch, contact / work / resume · open from Jan 2027 · Vancouver  
 2. **About** — CICCC web development student; full-stack TypeScript  
 3. **Skills** — languages, frontend, backend, database, tools, and spoken languages from the resume  
 4. **Work** — Trim Team Booking App, Unsplash Landing Page Recreation, Player Performance Explorer, Real-Time Chat App, plus this site  

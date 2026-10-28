@@ -89,7 +89,7 @@ export default function SiteNav() {
             ))}
           </ul>
           <footer className="site-nav__foot">
-            <span className="site-nav__role">Front-End / Full-Stack</span>
+            <span className="site-nav__role">Full-Stack Developer</span>
             <span className="site-nav__links">
               <a
                 className="site-nav__mail"
