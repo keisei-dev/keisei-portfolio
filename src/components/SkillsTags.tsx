@@ -17,7 +17,6 @@ import {
   siSocketdotio,
   siSupabase,
   siTailwindcss,
-  siThreedotjs,
   siTypescript,
   siVercel,
 } from 'simple-icons';
@@ -47,7 +46,6 @@ const GROUPS: { label: string; items: Skill[] }[] = [
       { name: 'Next.js (App Router)', icon: siNextdotjs },
       { name: 'Astro', icon: siAstro },
       { name: 'Tailwind CSS', icon: siTailwindcss },
-      { name: 'Three.js', icon: siThreedotjs },
     ],
   },
   {
