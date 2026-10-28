@@ -223,94 +223,82 @@
   margin-left: auto;
 }
 
-/* Carousel only after JS opts in. Without JS the list stays a grid. */
-#projects.work-carousel .work-viewport {
-  overflow: hidden;
-  max-width: 40rem;
-  margin: 12px auto 0;
-  touch-action: pan-y;
+/* Scroll-driven track. Without the class, the list stays a grid. */
+#projects.work-scroll {
+  display: block;
+  padding: 0;
+  overflow: visible;
 }
-#projects.work-carousel .project-list {
+#projects.work-scroll .panel-body--work {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  max-height: 100svh;
   display: flex;
-  gap: 0;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 92px 0 36px;
+  overflow: hidden;
+}
+#projects.work-scroll .work-viewport {
+  container-type: inline-size;
+  overflow: hidden;
   width: 100%;
+  margin-top: 8px;
+}
+#projects.work-scroll .project-list {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
   max-width: none;
   margin: 0;
-  transform: translateX(calc(var(--index, 0) * -100%));
-  transition: transform 600ms ease;
+  will-change: transform;
 }
-#projects.work-carousel .project-list.is-instant {
-  transition: none;
+#projects.work-scroll .project-list > li {
+  flex: 0 0 calc(100cqi - 4.5rem);
+  width: calc(100cqi - 4.5rem);
 }
-#projects.work-carousel .project-list > li {
-  flex: 0 0 100%;
-  min-width: 0;
-  display: flex;
-}
-#projects.work-carousel .project-card,
-#projects.work-carousel .project-note {
-  width: 100%;
+#projects.work-scroll .project-note {
   margin-top: 0;
+  height: 100%;
 }
-.work-controls {
+.work-progress {
+  margin: 0 0 4px;
+  font-family: var(--font-m);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--accent-2);
+}
+
+/* Phones: a native sideways row instead of a tall sticky pin. */
+#projects.work-snap {
+  height: auto !important;
+}
+#projects.work-snap .work-viewport {
+  container-type: inline-size;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 8px;
+}
+#projects.work-snap .project-list {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 22px;
+  gap: 14px;
+  width: max-content;
+  max-width: none;
+  margin: 0;
+  transform: none !important;
 }
-.work-arrow {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 4px;
-  border: 1px solid rgba(169, 198, 239, 0.4);
-  background: rgba(8, 14, 28, 0.5);
-  color: var(--text-1);
-  cursor: pointer;
+#projects.work-snap .project-list > li {
+  flex: 0 0 calc(100cqi - 1.5rem);
+  width: calc(100cqi - 1.5rem);
+  scroll-snap-align: center;
 }
-.work-arrow:hover {
-  border-color: rgba(210, 228, 255, 0.75);
-  color: #fff;
-}
-.work-arrow:focus-visible,
-.work-dot:focus-visible {
-  outline: 2px solid var(--accent-2);
-  outline-offset: 3px;
-}
-.work-arrow span {
-  width: 8px;
-  height: 8px;
-  border-top: 1.5px solid currentColor;
-  border-right: 1.5px solid currentColor;
-}
-.work-arrow--prev span {
-  transform: rotate(-135deg);
-  margin-left: 3px;
-}
-.work-arrow--next span {
-  transform: rotate(45deg);
-  margin-right: 3px;
-}
-.work-dots {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.work-dot {
-  width: 11px;
-  height: 11px;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(169, 198, 239, 0.55);
-  background: transparent;
-  cursor: pointer;
-}
-.work-dot[aria-current='true'] {
-  background: var(--accent-2);
-  border-color: var(--accent-2);
+#projects.work-snap .project-note {
+  margin-top: 0;
 }
 
 @media (max-width: 900px) {
