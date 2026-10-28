@@ -3,6 +3,15 @@ import '../styles/global.css';
 import SiteNav from '../components/SiteNav';
 import SkillsTags from '../components/SkillsTags';
 import ContactSignal from '../components/ContactSignal';
+import WorkProjects from '../components/WorkProjects.astro';
+
+const title = 'Keisei Kondo | Front-End / Full-Stack Developer';
+const description =
+  'Keisei Kondo — front-end / full-stack developer in Vancouver. TypeScript, React, Next.js, Astro, and Node. Open to full-time roles from January 2027.';
+const site = Astro.site ?? new URL('https://keisei-portfolio.vercel.app');
+const pageUrl = new URL('/', site).href;
+const imageUrl = new URL('/og.png', site).href;
+const resumeUrl = '/Keisei_Kondo_Resume.pdf';
 ---
 
 <!DOCTYPE html>
@@ -11,11 +20,23 @@ import ContactSignal from '../components/ContactSignal';
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Keisei Kondo — front-end developer in Vancouver. Open to full-time roles from January 2027."
-    />
-    <title>Keisei Kondo | Front-End Developer</title>
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Keisei Kondo" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Keisei Kondo — Front-End / Full-Stack Developer in Vancouver" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content="Keisei Kondo — Front-End / Full-Stack Developer in Vancouver" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -29,8 +50,17 @@ import ContactSignal from '../components/ContactSignal';
     <canvas id="bg" aria-hidden="true"></canvas>
 
     <header class="site-header">
-      <a class="logo" href="#">KEISEI</a>
-      <SiteNav client:load />
+      <a class="logo" href="#hero">KEISEI</a>
+      <div class="header-actions">
+        <a
+          class="header-resume"
+          href={resumeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          >Resume</a
+        >
+        <SiteNav client:load />
+      </div>
     </header>
 
     <main id="main-content">
@@ -41,14 +71,12 @@ import ContactSignal from '../components/ContactSignal';
             Open to full-time roles · Jan 2027 · Vancouver
           </p>
           <h1 id="hero-heading" class="hero-title">
-            <span class="visually-hidden">Front-End Developer</span>
+            <span class="visually-hidden">Front-End / Full-Stack Developer</span>
             <canvas class="hero-star-title" data-hero-stars aria-hidden="true"></canvas>
           </h1>
           <div class="hero-lower" data-hero-line>
             <p class="hero-lead">
-              I build interfaces that feel
-              <em>intentional</em> — clear UI,
-              <em>smooth interaction</em>, production-ready detail.
+              I build full-stack TypeScript apps — clear UI, working APIs, production-ready detail.
             </p>
             <div class="hero-actions">
               <a class="hero-cta" href="#contact">
@@ -58,6 +86,13 @@ import ContactSignal from '../components/ContactSignal';
                 </span>
               </a>
               <a class="hero-link" href="#projects">See my work</a>
+              <a
+                class="hero-link"
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                >Resume</a
+              >
             </div>
           </div>
         </div>
@@ -79,7 +114,7 @@ import ContactSignal from '../components/ContactSignal';
               <p class="about-meta">
                 Vancouver · JA / EN · From Jan 2027
               </p>
-              <p class="about-focus">UI · Interaction · Craft</p>
+              <p class="about-focus">Front-End · Full-Stack · TypeScript</p>
             </div>
 
             <div
@@ -89,15 +124,18 @@ import ContactSignal from '../components/ContactSignal';
               style="--reveal-delay: 0.16s"
             >
               <p class="copy prose-line" style="--l: 0">
-                I turn product ideas into
-                <span class="hl">usable interfaces</span> with
-                <span class="hl">TypeScript</span>,
-                <span class="hl">React</span>, and careful CSS.
+                Web development student at
+                <span class="hl">CICCC</span> in Vancouver, building
+                <span class="hl">full-stack TypeScript</span> applications.
               </p>
               <p class="copy prose-line" style="--l: 1">
-                I care about what users feel —
-                <span class="hl">clarity</span>,
-                <span class="hl">accessibility</span>, and polish that holds up after ship.
+                Shipped work with
+                <span class="hl">Next.js</span>,
+                <span class="hl">Astro</span>, and
+                <span class="hl">React</span> on the front end, and
+                <span class="hl">Express</span>,
+                <span class="hl">Socket.IO</span>, and
+                <span class="hl">PostgreSQL</span> on the back end.
               </p>
             </div>
           </div>
@@ -113,43 +151,13 @@ import ContactSignal from '../components/ContactSignal';
         </div>
         <div class="marquee" aria-hidden="true">
           <div class="marquee-track">
-            <span>Front-End ✦ UI/UX ✦ TypeScript ✦ React ✦ Astro ✦ CSS ✦ A11y ✦ Motion ✦</span>
-            <span>Front-End ✦ UI/UX ✦ TypeScript ✦ React ✦ Astro ✦ CSS ✦ A11y ✦ Motion ✦</span>
+            <span>TypeScript ✦ React ✦ Next.js ✦ Astro ✦ Node.js ✦ PostgreSQL ✦ </span>
+            <span>TypeScript ✦ React ✦ Next.js ✦ Astro ✦ Node.js ✦ PostgreSQL ✦ </span>
           </div>
         </div>
       </section>
 
-      <section class="panel panel--work" id="projects" aria-labelledby="projects-heading">
-        <div class="panel-body panel-body--projects panel-body--work" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="projects-heading">Work</h2>
-          </header>
-          <p class="lead" data-words>This site is the case study.</p>
-
-          <article class="project-feature" data-reveal data-feature style="--reveal-delay: 0.12s">
-            <div class="project-feature__head">
-              <div class="project-feature__meta">
-                <span class="project-feature__index" data-feature-word>01</span>
-                <span class="project-feature__status" data-feature-word>Live</span>
-              </div>
-              <h3 class="project-feature__title" data-feature-words>Interactive Portfolio</h3>
-              <p class="project-feature__role" data-feature-words>Solo front-end build</p>
-            </div>
-
-            <p class="project-feature__summary" data-feature-words>
-              WebGL starfield, interactive title, and scroll-driven motion —
-              built to show UI craft in the browser.
-            </p>
-
-            <ul class="project-feature__tags" aria-label="Technologies">
-              <li data-feature-word>Astro</li>
-              <li data-feature-word>Three.js</li>
-              <li data-feature-word>TypeScript</li>
-              <li data-feature-word>React</li>
-            </ul>
-          </article>
-        </div>
-      </section>
+      <WorkProjects />
 
       <section class="panel" id="value" aria-labelledby="value-heading">
         <div class="panel-body" data-panel>
@@ -160,30 +168,33 @@ import ContactSignal from '../components/ContactSignal';
 
           <div class="value-ticker" data-reveal style="--reveal-delay: 0.12s" aria-hidden="true">
             <div class="value-ticker__track">
-              <span>Clarity</span>
-              <span>Craft</span>
-              <span>Accessibility</span>
-              <span>Motion</span>
+              <span>TypeScript</span>
               <span>Collaboration</span>
-              <span>Ship quality</span>
-              <span>Clarity</span>
-              <span>Craft</span>
-              <span>Accessibility</span>
-              <span>Motion</span>
+              <span>Git</span>
+              <span>Full-stack</span>
+              <span>PostgreSQL</span>
+              <span>Vercel</span>
+              <span>TypeScript</span>
               <span>Collaboration</span>
-              <span>Ship quality</span>
+              <span>Git</span>
+              <span>Full-stack</span>
+              <span>PostgreSQL</span>
+              <span>Vercel</span>
             </div>
           </div>
 
           <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
             <p class="copy prose-line" style="--l: 0">
-              <span class="hl">Pixel-aware UI</span> with clean components, readable code, and
-              motion that supports the product — not noise.
+              Team development with
+              <span class="hl">Git and GitHub</span>, shipping
+              <span class="hl">Next.js</span>,
+              <span class="hl">Astro</span>, and
+              <span class="hl">Express</span> apps to Vercel.
             </p>
             <p class="copy prose-line" style="--l: 1">
               I communicate in
-              <span class="hl">Japanese and English</span>, take feedback well, and ship front-end
-              work that is ready for real users.
+              <span class="hl">Japanese (native)</span> and
+              <span class="hl">English</span>, and I'm open to full-time roles from January 2027.
             </p>
           </div>
         </div>
@@ -198,17 +209,24 @@ import ContactSignal from '../components/ContactSignal';
           <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
             <p class="copy prose-line" style="--l: 0">
               Hiring a
-              <span class="hl">front-end developer</span> in
-              <span class="hl">Vancouver</span> or on a remote-friendly team?
+              <span class="hl">front-end / full-stack developer</span> in
+              <span class="hl">Vancouver</span>?
             </p>
             <p class="copy prose-line" style="--l: 1">
-              I'd love to hear about the role —
-              interviews, take-homes, and next steps welcome.
+              I'd like to hear about the role — interviews, take-homes, and next steps welcome.
             </p>
           </div>
           <div class="contact-actions" data-reveal style="--reveal-delay: 0.16s">
             <ContactSignal client:load />
             <ul class="contact-links" role="list">
+              <li>
+                <a class="contact-link" href={resumeUrl} target="_blank" rel="noopener noreferrer"
+                  >Resume</a
+                >
+              </li>
+              <li>
+                <a class="contact-link" href="tel:+16043796482">604-379-6482</a>
+              </li>
               <li>
                 <a
                   class="contact-link"

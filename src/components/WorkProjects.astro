@@ -1,0 +1,220 @@
+---
+type Shot = { src: string; alt: string; width: number; height: number };
+
+type Project = {
+  index: string;
+  title: string;
+  date: string;
+  dateTime: string;
+  role: string;
+  summary: string;
+  tags: string[];
+  live?: string;
+  github?: string;
+  images?: Shot[];
+  placeholder?: 'stats' | 'chat';
+};
+
+const projects: Project[] = [
+  {
+    index: '01',
+    title: 'Trim Team Booking App',
+    date: 'Sep 2026',
+    dateTime: '2026-09',
+    role: 'Team · Built the staff dashboard',
+    summary:
+      'Staff dashboard for a Metro Vancouver lawn-care booking app. Customers book without an account; after signing in, staff filter, edit, confirm, complete, and cancel jobs. Finished bookings stay locked, and staff routes use signed cookie sessions.',
+    tags: ['Next.js (App Router)', 'TypeScript', 'Tailwind CSS', 'Neon Postgres'],
+    live: 'https://trim-team.vercel.app',
+    github: 'https://github.com/Cornerstone-CICCC/booking-app-midterm-trim-team',
+    images: [
+      {
+        src: '/projects/trim-team.jpg',
+        alt: 'Trim Team booking site: lawn care in Metro Vancouver, with a booking form and staff login.',
+        width: 1440,
+        height: 500,
+      },
+    ],
+  },
+  {
+    index: '02',
+    title: 'Unsplash Landing Page Recreation',
+    date: 'Sep 2026',
+    dateTime: '2026-09',
+    role: 'Individual',
+    summary:
+      'Responsive recreation of Unsplash\'s landing page. Each section is a typed component that receives its content as props. An email signup form connects to Web3Forms and stores subscribers in a Supabase Postgres table.',
+    tags: ['Next.js (App Router)', 'TypeScript', 'Web3Forms', 'Supabase'],
+    live: 'https://unsplash-keisei.vercel.app',
+    github: 'https://github.com/keisei-dev/unsplash-clone',
+    images: [
+      {
+        src: '/projects/unsplash-hero.jpg',
+        alt: 'Unsplash landing page recreation, showing the hero, search, and featured photos.',
+        width: 1268,
+        height: 742,
+      },
+      {
+        src: '/projects/unsplash-gallery.jpg',
+        alt: 'Photo gallery from the Unsplash landing page recreation.',
+        width: 1268,
+        height: 742,
+      },
+    ],
+  },
+  {
+    index: '03',
+    title: 'Player Performance Explorer',
+    date: 'Jul 2026',
+    dateTime: '2026-07',
+    role: 'Individual',
+    summary:
+      'Full-stack app for FIFA World Cup 2026 player match data. Astro SSR front end, an Express API in TypeScript, and PostgreSQL via a pg Pool. Full CRUD, server-side pagination, name search, filtering, sorting, and a rankings endpoint that joins players and performances.',
+    tags: ['Astro', 'TypeScript', 'Express', 'PostgreSQL'],
+    github: 'https://github.com/keisei-dev/player-stats',
+    placeholder: 'stats',
+  },
+  {
+    index: '04',
+    title: 'Real-Time Chat App',
+    date: 'Jun 2026',
+    dateTime: '2026-06',
+    role: 'Team · Bootstrapped the app · 4 PRs merged',
+    summary:
+      'First PR set up an Express MVC backend with Socket.IO and an Astro, Tailwind CSS, and TypeScript client. Per-message copy, local delete, and unsend broadcast to every client, plus a leave-room button with join/leave notices and Random as a built-in default room.',
+    tags: ['Astro', 'TypeScript', 'Tailwind CSS', 'Express', 'Socket.IO'],
+    github:
+      'https://github.com/Cornerstone-CICCC/final-project-full-stack-real-time-app-patrick-kingdom',
+    placeholder: 'chat',
+  },
+];
+---
+
+<section class="panel panel--work" id="projects" aria-labelledby="projects-heading">
+  <div class="panel-body panel-body--projects panel-body--work" data-panel>
+    <header class="section-head" data-reveal>
+      <h2 id="projects-heading">Work</h2>
+    </header>
+    <p class="lead" data-words>Shipped projects, newest first.</p>
+
+    <ol class="project-list">
+      {
+        projects.map((project, i) => (
+          <li>
+            <article
+              class:list={[
+                'project-card',
+                project.images && project.images.length > 1 && 'project-card--pair',
+              ]}
+              data-reveal
+              style={`--reveal-delay: ${0.08 + i * 0.06}s`}
+            >
+              <div class="project-card__media">
+                {project.images ? (
+                  project.images.map((image) => (
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      width={image.width}
+                      height={image.height}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))
+                ) : project.placeholder === 'stats' ? (
+                  <div class="project-placeholder" data-variant="stats">
+                    <span class="project-placeholder__mark">PostgreSQL</span>
+                    <span class="project-placeholder__bars" aria-hidden="true">
+                      <i style="--w: 92%" />
+                      <i style="--w: 74%" />
+                      <i style="--w: 58%" />
+                      <i style="--w: 41%" />
+                    </span>
+                    <span class="project-placeholder__caption">
+                      Players · Matches · Performances
+                    </span>
+                  </div>
+                ) : (
+                  <div class="project-placeholder" data-variant="chat">
+                    <span class="project-placeholder__mark">Socket.IO</span>
+                    <span class="project-placeholder__thread" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                    <span class="project-placeholder__caption">Copy · Delete · Unsend</span>
+                  </div>
+                )}
+              </div>
+
+              <div class="project-card__body">
+                <div class="project-card__top">
+                  <span class="project-card__index">{project.index}</span>
+                  <time class="project-card__date" datetime={project.dateTime}>
+                    {project.date}
+                  </time>
+                </div>
+                <h3 class="project-card__title">{project.title}</h3>
+                <p class="project-card__role">{project.role}</p>
+                <p class="project-card__desc">{project.summary}</p>
+                <ul class="project-card__tags" aria-label="Technologies">
+                  {project.tags.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
+                <div class="project-card__actions">
+                  {project.live && (
+                    <a
+                      class="project-btn project-btn--live"
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Live
+                    </a>
+                  )}
+                  {project.github && (
+                    <a
+                      class="project-btn"
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub
+                    </a>
+                  )}
+                </div>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+
+    <article class="project-note" data-reveal style="--reveal-delay: 0.32s">
+      <div class="project-note__main">
+        <p class="project-note__index">05</p>
+        <div>
+          <h3 class="project-note__title">Interactive Portfolio</h3>
+          <p class="project-note__role">Individual · This site</p>
+        </div>
+      </div>
+      <p class="project-note__desc">
+        WebGL starfield and a star-particle title — this page, built with Astro, React, and Three.js.
+      </p>
+      <ul class="project-card__tags" aria-label="Technologies">
+        <li>Astro</li>
+        <li>Three.js</li>
+        <li>TypeScript</li>
+        <li>React</li>
+      </ul>
+      <a
+        class="project-btn"
+        href="https://github.com/keisei-dev/keisei-portfolio"
+        target="_blank"
+        rel="noopener noreferrer"
+        >GitHub</a
+      >
+    </article>
+  </div>
+</section>

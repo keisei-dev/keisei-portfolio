@@ -609,6 +609,9 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   }
   measureSections();
 
+  const motionMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let reducedMotion = motionMq.matches;
+
   const timer = new THREE.Timer();
   timer.connect(document);
   let t = 0;
@@ -619,6 +622,10 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   const streakAttr = streakGeo.getAttribute('position') as THREE.BufferAttribute;
 
   function animate(timestamp?: number) {
+    if (reducedMotion) {
+      renderer.render(scene, camera);
+      return;
+    }
     requestAnimationFrame(animate);
     if (document.hidden) return;
     const now = timestamp ?? performance.now();
@@ -820,6 +827,17 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
     renderer.setPixelRatio(nextDpr);
     renderer.setSize(window.innerWidth, window.innerHeight);
     measureSections();
+    if (reducedMotion) renderer.render(scene, camera);
   }
   window.addEventListener('resize', onResize);
+
+  const onMotionChange = () => {
+    reducedMotion = motionMq.matches;
+    if (reducedMotion) {
+      renderer.render(scene, camera);
+      return;
+    }
+    requestAnimationFrame(animate);
+  };
+  motionMq.addEventListener('change', onMotionChange);
 }

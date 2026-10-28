@@ -1,30 +1,53 @@
-const SKILLS = [
-  'HTML',
-  'CSS',
-  'JavaScript',
-  'TypeScript',
-  'Astro',
-  'React',
-  'Three.js',
-  'Vite',
-  'UI/UX',
-  'A11y',
-  'Git',
-  'GitHub',
+const GROUPS = [
+  {
+    label: 'Languages',
+    items: ['TypeScript', 'JavaScript', 'HTML', 'CSS', 'SCSS', 'SQL'],
+  },
+  {
+    label: 'Frontend',
+    items: ['React', 'Next.js (App Router)', 'Astro', 'Tailwind CSS', 'Three.js'],
+  },
+  {
+    label: 'Backend',
+    items: ['Node.js', 'Express', 'Socket.IO', 'REST APIs', 'cookie-based sessions'],
+  },
+  {
+    label: 'Database',
+    items: ['PostgreSQL (node-postgres)', 'Neon', 'Supabase'],
+  },
+  {
+    label: 'Tools',
+    items: ['Git', 'GitHub', 'Vercel', 'Web3Forms'],
+  },
+  {
+    label: 'Languages spoken',
+    items: ['Japanese (Native)', 'English'],
+  },
 ] as const;
 
 export default function SkillsTags() {
   return (
-    <ul className="tags" role="list">
-      {SKILLS.map((skill, i) => (
-        <li
-          key={skill}
+    <div className="skill-groups">
+      {GROUPS.map((group, i) => (
+        <section
+          key={group.label}
+          className="skill-group"
+          aria-labelledby={`skill-${i}`}
           data-reveal
-          style={{ ['--reveal-delay' as string]: `${0.08 + i * 0.04}s` }}
+          style={{ ['--reveal-delay' as string]: `${0.06 + i * 0.05}s` }}
         >
-          <span className="tag">{skill}</span>
-        </li>
+          <h3 id={`skill-${i}`} className="skill-group__label">
+            {group.label}
+          </h3>
+          <ul className="tags" role="list">
+            {group.items.map((skill) => (
+              <li key={skill}>
+                <span className="tag">{skill}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+    </div>
   );
 }

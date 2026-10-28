@@ -35,18 +35,17 @@ function centerStars(stars: Star[], width: number, height: number) {
   }
 }
 
+/** Title lines. Narrow screens stack three short rows so the lead still fits. */
+function titleLines(width: number): string[] {
+  if (width < 720) return ['FRONT-END', 'FULL-STACK', 'DEVELOPER'];
+  return ['FRONT-END / FULL-STACK', 'DEVELOPER'];
+}
+
 /**
  * Dense steel-star letterforms — bold uppercase sample for a masculine portfolio read.
- * On narrow viewports, stack as two lines so the title stays readable.
  * `compact` = mobile-friendly density (stars, but not a white smear).
  */
-function buildStars(
-  text: string,
-  width: number,
-  height: number,
-  dpr: number,
-  compact = false,
-): Star[] {
+function buildStars(width: number, height: number, dpr: number, compact = false): Star[] {
   const sample = document.createElement('canvas');
   const sw = Math.max(2, Math.floor(width * dpr));
   const sh = Math.max(2, Math.floor(height * dpr));
@@ -55,18 +54,16 @@ function buildStars(
   const ctx = sample.getContext('2d', { willReadFrequently: true });
   if (!ctx) return [];
 
-  const stacked = width < 720;
-  const lines = stacked ? ['FRONT-END', 'DEVELOPER'] : [text.toUpperCase()];
+  const lines = titleLines(width);
+  const narrow = width < 720;
   // Keep side padding so F/R stems + glow aren't clipped at canvas edges
-  const padX = sw * (stacked ? 0.08 : 0.06);
-  const padY = sh * (stacked ? 0.1 : 0.06);
+  const padX = sw * (narrow ? 0.07 : 0.05);
+  const padY = sh * (narrow ? 0.07 : 0.08);
   const maxTextW = sw - padX * 2;
   const maxTextH = sh - padY * 2;
-  const lineGap = stacked ? 1.08 : 1;
+  const lineGap = narrow ? 1.02 : 1.05;
 
-  let fontPx = stacked
-    ? Math.min(sw * (compact ? 0.27 : 0.22), sh * (compact ? 0.4 : 0.36))
-    : Math.min(sw * 0.3, sh * 0.88);
+  let fontPx = Math.min(sw * (compact ? 0.32 : 0.2), sh * (compact ? 0.46 : 0.46));
 
   const applyFont = (size: number) => {
     ctx.font = `${size}px "Bebas Neue", "Arial Narrow", sans-serif`;
@@ -144,7 +141,6 @@ export function initHero() {
   // Hero title: viewport-width only — never share mobile look with desktop via pointer:coarse
   const isMobileHero = () => window.matchMedia('(max-width: 720px)').matches;
   let mobile = isMobileHero();
-  const text = 'Front-End Developer';
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
@@ -173,7 +169,7 @@ export function initHero() {
     canvas.width = Math.floor(cssW * dpr);
     canvas.height = Math.floor(cssH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    stars = buildStars(text, cssW, cssH, dpr, mobile);
+    stars = buildStars(cssW, cssH, dpr, mobile);
     frozen = false;
   };
 

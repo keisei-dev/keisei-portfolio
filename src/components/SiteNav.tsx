@@ -89,10 +89,20 @@ export default function SiteNav() {
             ))}
           </ul>
           <footer className="site-nav__foot">
-            <span className="site-nav__role">Front-End Developer</span>
-            <a className="site-nav__mail" href="mailto:keisei20001206@gmail.com">
-              Email
-            </a>
+            <span className="site-nav__role">Front-End / Full-Stack</span>
+            <span className="site-nav__links">
+              <a
+                className="site-nav__mail"
+                href="/Keisei_Kondo_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Resume
+              </a>
+              <a className="site-nav__mail" href="mailto:keisei20001206@gmail.com">
+                Email
+              </a>
+            </span>
           </footer>
         </div>
       </nav>

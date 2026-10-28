@@ -1,3 +1,57 @@
+#skills.panel {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: clamp(108px, 14vh, 150px);
+  padding-bottom: clamp(72px, 10vh, 110px);
+}
+#skills .marquee {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  margin-top: 72px;
+  width: 100%;
+}
+
+.skill-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  max-width: 52rem;
+  margin-inline: auto;
+  text-align: left;
+}
+
+.skill-group__label {
+  margin: 0 0 10px;
+  font-family: var(--font-m);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+.skill-group .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.skill-group .tag {
+  width: auto;
+  min-height: 0;
+  padding: 10px 14px;
+  font-size: clamp(0.82rem, 1.15vw, 0.95rem);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .tags {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -136,6 +190,23 @@
 }
 
 @media (max-width: 640px) {
+  #skills.panel {
+    padding-top: 88px;
+    padding-bottom: 64px;
+  }
+  #skills .marquee {
+    margin-top: 40px;
+  }
+  .skill-groups {
+    gap: 16px;
+  }
+  .skill-group .tag {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    min-height: 0;
+  }
   .tags {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
