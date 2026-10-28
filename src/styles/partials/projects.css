@@ -36,7 +36,7 @@
   min-height: 100%;
   padding: 26px 26px 22px;
   overflow: hidden;
-  border: 1px solid rgba(169, 198, 239, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.015) 100%),
@@ -246,14 +246,15 @@
   box-sizing: border-box;
   padding: 92px 0 36px;
   overflow: visible;
-  text-align: center;
+  text-align: left;
 }
 #projects.work-scroll .section-head,
 #projects.work-scroll .lead,
 #projects.work-scroll .work-progress {
-  width: 100%;
+  width: min(1120px, calc(100% - 2 * clamp(20px, 4vw, 48px)));
   max-width: none;
-  text-align: center;
+  margin-inline: auto;
+  text-align: left;
 }
 #projects.work-scroll .work-viewport {
   width: 100%;

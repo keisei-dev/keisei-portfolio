@@ -1,424 +1,139 @@
-import { onPageScroll, pageScrollY } from './smoothScroll';
-
-type Star = {
-  ox: number;
-  oy: number;
+type Dot = {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
   r: number;
+  base: number;
   phase: number;
   speed: number;
-  delay: number;
-  bright: boolean;
+  vx: number;
+  vy: number;
+  tone: string;
 };
 
-/** Shift star cluster so its bounding box is centered in the canvas. */
-function centerStars(stars: Star[], width: number, height: number) {
-  if (!stars.length) return;
-  let minX = Infinity;
-  let maxX = -Infinity;
-  let minY = Infinity;
-  let maxY = -Infinity;
-  for (const s of stars) {
-    minX = Math.min(minX, s.ox);
-    maxX = Math.max(maxX, s.ox);
-    minY = Math.min(minY, s.oy);
-    maxY = Math.max(maxY, s.oy);
-  }
-  const dx = width / 2 - (minX + maxX) / 2;
-  const dy = height / 2 - (minY + maxY) / 2;
-  for (const s of stars) {
-    s.ox += dx;
-    s.oy += dy;
-    s.x = s.ox;
-    s.y = s.oy;
-  }
-}
-
-/** One line on desktop. Two short rows on narrow screens so the lead still fits. */
-function titleLines(width: number): string[] {
-  if (width < 720) return ['FULL-STACK', 'DEVELOPER'];
-  return ['FULL-STACK DEVELOPER'];
-}
-
 /**
- * Dense steel-star letterforms — bold uppercase sample for a masculine portfolio read.
- * `compact` = mobile-friendly density (stars, but not a white smear).
+ * Sparse 2D dust behind the hero. No libraries, no WebGL.
+ * Pauses when the tab or the hero is hidden. One static frame if motion is reduced.
  */
-function buildStars(width: number, height: number, dpr: number, compact = false): Star[] {
-  const sample = document.createElement('canvas');
-  const sw = Math.max(2, Math.floor(width * dpr));
-  const sh = Math.max(2, Math.floor(height * dpr));
-  sample.width = sw;
-  sample.height = sh;
-  const ctx = sample.getContext('2d', { willReadFrequently: true });
-  if (!ctx) return [];
-
-  const lines = titleLines(width);
-  const narrow = width < 720;
-  const single = lines.length === 1;
-  // Keep side padding so F/R stems + glow aren't clipped at canvas edges
-  const padX = sw * (narrow ? 0.08 : 0.055);
-  const padY = sh * (single ? 0.1 : 0.1);
-  const maxTextW = sw - padX * 2;
-  const maxTextH = sh - padY * 2;
-  const lineGap = single ? 1 : 1.06;
-
-  let fontPx = single
-    ? Math.min(sw * 0.3, sh * 0.86)
-    : Math.min(sw * (compact ? 0.36 : 0.24), sh * (compact ? 0.5 : 0.48));
-
-  const applyFont = (size: number) => {
-    ctx.font = `${size}px "Bebas Neue", "Arial Narrow", sans-serif`;
-    ctx.letterSpacing = `${size * (compact ? 0.03 : 0.04)}px`;
-  };
-
-  applyFont(fontPx);
-  let widest = 0;
-  for (const line of lines) {
-    widest = Math.max(widest, ctx.measureText(line).width);
-  }
-  if (widest > maxTextW) fontPx *= maxTextW / widest;
-
-  applyFont(fontPx);
-  const blockH = fontPx * lineGap * lines.length;
-  if (blockH > maxTextH) fontPx *= maxTextH / blockH;
-
-  applyFont(fontPx);
-  ctx.clearRect(0, 0, sw, sh);
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const lineHeight = fontPx * lineGap;
-  const startY = sh / 2 - (lineHeight * (lines.length - 1)) / 2;
-  lines.forEach((line, i) => {
-    ctx.fillText(line, sw / 2, startY + i * lineHeight);
-  });
-
-  const { data } = ctx.getImageData(0, 0, sw, sh);
-  // Compact: dense enough to read as stars-as-type, small enough to avoid white mush
-  const step = Math.max(2, Math.round(dpr * (compact ? 2.15 : 1.65)));
-  const stars: Star[] = [];
-
-  for (let y = 0; y < sh; y += step) {
-    for (let x = 0; x < sw; x += step) {
-      const a = data[(y * sw + x) * 4 + 3];
-      if (a < 150) continue;
-      const jx = (Math.random() - 0.5) * step * (compact ? 0.28 : 0.4);
-      const jy = (Math.random() - 0.5) * step * (compact ? 0.28 : 0.4);
-      const px = (x + jx) / dpr;
-      const py = (y + jy) / dpr;
-      const bright = Math.random() > (compact ? 0.9 : 0.88);
-      // Desktop keeps the original star sizes; compact only shrinks for mobile density.
-      const r = compact
-        ? ((bright ? 1.2 : 0.65) + Math.random() * (bright ? 0.85 : 0.7)) * 0.82
-        : (bright ? 1.35 : 0.7) + Math.random() * (bright ? 1.1 : 0.95);
-      stars.push({
-        ox: px,
-        oy: py,
-        x: px,
-        y: py,
-        vx: 0,
-        vy: 0,
-        r,
-        phase: Math.random() * Math.PI * 2,
-        speed: bright ? 0.8 + Math.random() * 1.4 : 1.6 + Math.random() * 3.4,
-        delay: Math.random() * (compact ? 0.4 : 0.75),
-        bright,
-      });
-    }
-  }
-
-  centerStars(stars, width, height);
-  return stars;
-}
-
-/** Star-filled hero title — cursor repulsion (stars flee, then return). */
 export function initHero() {
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const content = document.querySelector<HTMLElement>('[data-hero]');
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-stars]');
-  if (!hero || !content || !canvas) return;
-
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Hero title: viewport-width only — never share mobile look with desktop via pointer:coarse
-  const isMobileHero = () => window.matchMedia('(max-width: 720px)').matches;
-  let mobile = isMobileHero();
-  const ctx = canvas.getContext('2d');
+  const hero = document.getElementById('hero');
+  const canvas = hero?.querySelector<HTMLCanvasElement>('[data-hero-dust]');
+  if (!hero || !canvas) return;
+  const ctx = canvas.getContext('2d', { alpha: true });
   if (!ctx) return;
 
-  let stars: Star[] = [];
-  let start = performance.now();
-  let readyAt = 0;
-  let pointerActive = false;
-  let pointerX = 0;
-  let pointerY = 0;
-  let frozen = false;
-  let cssW = 1;
-  let cssH = 1;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(pointer: fine)').matches;
+
+  let dots: Dot[] = [];
+  let width = 1;
+  let height = 1;
+  let raf = 0;
+  let running = false;
+  let onScreen = true;
+  let pageHidden = document.hidden;
+  let mx = 0;
+  let my = 0;
+  let px = 0;
+  let py = 0;
 
   const layout = () => {
-    mobile = isMobileHero();
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    canvas.style.width = '100%';
-    canvas.style.height = '';
-    cssW = Math.max(1, canvas.clientWidth || content.clientWidth);
-    cssH = Math.max(1, canvas.clientHeight);
-    // Mobile only: lock the CSS box so the denser bitmap doesn't stretch
-    if (mobile) {
-      canvas.style.width = `${cssW}px`;
-      canvas.style.height = `${cssH}px`;
-    }
-    canvas.width = Math.floor(cssW * dpr);
-    canvas.height = Math.floor(cssH * dpr);
+    width = Math.max(1, hero.clientWidth);
+    height = Math.max(1, hero.clientHeight);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    stars = buildStars(cssW, cssH, dpr, mobile);
-    frozen = false;
-  };
-
-  /** Stars flee the cursor, then spring back home. Desktop only. */
-  const updatePhysics = (t: number) => {
-    if (prefersReduced || mobile) {
-      for (const s of stars) {
-        s.x = s.ox;
-        s.y = s.oy;
-      }
-      return;
-    }
-
-    const radius = 105;
-    const radiusSq = radius * radius;
-    const maxDist = 48;
-
-    for (const s of stars) {
-      if (pointerActive) {
-        let dx = s.x - pointerX;
-        let dy = s.y - pointerY;
-        let distSq = dx * dx + dy * dy;
-        if (distSq < 4) {
-          dx = Math.cos(s.phase) * 2;
-          dy = Math.sin(s.phase) * 2;
-          distSq = 4;
-        }
-        if (distSq < radiusSq) {
-          const dist = Math.sqrt(distSq);
-          const force = (1 - dist / radius) * 3.6;
-          s.vx += (dx / dist) * force;
-          s.vy += (dy / dist) * force;
-        }
-      }
-
-      // Soft idle shimmer
-      const jx = Math.sin(t * (9 + s.speed) + s.phase) * 0.45;
-      const jy = Math.cos(t * (11 + s.speed * 0.8) + s.phase) * 0.4;
-
-      s.vx += (s.ox + jx - s.x) * 0.09;
-      s.vy += (s.oy + jy - s.y) * 0.09;
-      s.vx *= 0.84;
-      s.vy *= 0.84;
-      s.x += s.vx;
-      s.y += s.vy;
-
-      const hx = s.x - s.ox;
-      const hy = s.y - s.oy;
-      const hd = Math.hypot(hx, hy);
-      if (hd > maxDist) {
-        const k = maxDist / hd;
-        s.x = s.ox + hx * k;
-        s.y = s.oy + hy * k;
-        s.vx *= 0.4;
-        s.vy *= 0.4;
-      }
-    }
+    const count = Math.max(40, Math.min(150, Math.round((width * height) / 17000)));
+    dots = Array.from({ length: count }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: 0.35 + Math.random() * 1.15,
+      base: 0.12 + Math.random() * 0.5,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.35 + Math.random() * 1.05,
+      vx: (Math.random() - 0.5) * 0.06,
+      vy: 0.012 + Math.random() * 0.04,
+      tone: Math.random() > 0.7 ? '#b7b7bc' : '#f3f3f4',
+    }));
   };
 
   const draw = (now: number) => {
-    ctx.clearRect(0, 0, cssW, cssH);
-    const t = (now - start) / 1000;
-    const appear =
-      prefersReduced || frozen
-        ? 1
-        : Math.min(1, Math.max(0, (now - readyAt) / (mobile ? 900 : 1000)));
-
-    if (!mobile) updatePhysics(t);
-
-    for (const s of stars) {
-      const local = Math.min(1, Math.max(0, (appear - s.delay * 0.5) / 0.4));
-      if (local <= 0) continue;
-
-      const twinkle =
-        prefersReduced || mobile
-          ? 0.92
-          : s.bright
-            ? 0.7 + 0.3 * Math.pow(0.5 + 0.5 * Math.sin(t * s.speed + s.phase), 1.6)
-            : 0.45 + 0.55 * Math.pow(0.5 + 0.5 * Math.sin(t * s.speed * 1.4 + s.phase), 2.4);
-
-      const boost = pointerActive ? 1.12 : 1;
-      const alpha = local * twinkle * boost;
-      const r = s.r * (0.8 + twinkle * 0.5) * (pointerActive ? 1.06 : 1);
-      const core = Math.max(mobile ? 0.45 : 0.55, r * (s.bright ? 0.55 : 0.42));
-
-      // Desktop: soft gradient glow. Mobile: small solid halo only (keeps star look, no mush).
-      if (s.bright && !mobile) {
-        const glowR = r * 4.2;
-        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR);
-        g.addColorStop(0, `rgba(255,255,255,${Math.min(1, 0.98 * alpha)})`);
-        g.addColorStop(0.28, `rgba(210,220,232,${0.5 * alpha})`);
-        g.addColorStop(0.65, `rgba(150,170,195,${0.18 * alpha})`);
-        g.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, glowR, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.fillStyle = `rgba(210,220,232,${(mobile ? 0.28 : 0.22) * alpha})`;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, r * (mobile ? 1.65 : 2.2), 0, Math.PI * 2);
-        ctx.fill();
+    ctx.clearRect(0, 0, width, height);
+    px += (mx - px) * 0.045;
+    py += (my - py) * 0.045;
+    const t = now * 0.001;
+    for (const dot of dots) {
+      if (!reduced) {
+        dot.x += dot.vx;
+        dot.y += dot.vy;
+        if (dot.x < -4) dot.x = width + 4;
+        else if (dot.x > width + 4) dot.x = -4;
+        if (dot.y > height + 4) dot.y = -4;
       }
-
-      ctx.fillStyle = `rgba(245,248,255,${Math.min(1, alpha)})`;
+      const twinkle = reduced ? 1 : 0.62 + 0.38 * Math.sin(t * dot.speed + dot.phase);
+      const depth = dot.r / 1.5;
+      ctx.globalAlpha = Math.max(0, Math.min(1, dot.base * twinkle));
+      ctx.fillStyle = dot.tone;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, core, 0, Math.PI * 2);
+      ctx.arc(dot.x + px * 8 * depth, dot.y + py * 5 * depth, dot.r, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.globalAlpha = 1;
   };
 
-  let raf = 0;
-  let heroVisible = true;
   const loop = (now: number) => {
-    if (!heroVisible) {
-      raf = 0;
-      return;
-    }
-    // Mobile: short fade-in only, then fully static (no cursor physics / twinkle loop)
-    if (mobile) {
-      draw(now);
-      if (readyAt && now - readyAt > 1100) {
-        frozen = true;
-        draw(now);
-        raf = 0;
-        return;
-      }
-      raf = requestAnimationFrame(loop);
-      return;
-    }
+    if (!running) return;
     draw(now);
     raf = requestAnimationFrame(loop);
   };
 
-  const boot = () => {
-    layout();
-    if (prefersReduced) {
-      hero.classList.add('is-ready');
-      readyAt = performance.now();
-      frozen = true;
-      draw(performance.now());
-      return;
-    }
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        hero.classList.add('is-ready');
-        readyAt = performance.now();
-        start = readyAt;
-        raf = requestAnimationFrame(loop);
-      });
-    });
+  const start = () => {
+    if (running || reduced || !onScreen || pageHidden) return;
+    running = true;
+    raf = requestAnimationFrame(loop);
   };
 
-  if (document.fonts?.ready) {
-    document.fonts.ready.then(boot).catch(boot);
-  } else {
-    boot();
-  }
-
-  const setPointer = (e: PointerEvent, active: boolean) => {
-    const rect = canvas.getBoundingClientRect();
-    pointerX = e.clientX - rect.left;
-    pointerY = e.clientY - rect.top;
-    pointerActive = active;
+  const stop = () => {
+    running = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
   };
 
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
-  if (!mobile && finePointer) {
-    canvas.addEventListener('pointerenter', (e) => setPointer(e, true));
-    canvas.addEventListener('pointermove', (e) => setPointer(e, true));
-    canvas.addEventListener('pointerleave', () => {
-      pointerActive = false;
-    });
-  }
+  layout();
+  if (reduced) draw(0);
+  else start();
 
-  let mx = 0;
-  let my = 0;
-  let tx = 0;
-  let ty = 0;
-  let pRaf = 0;
-
-  const tick = () => {
-    if (!heroVisible) {
-      pRaf = 0;
-      return;
-    }
-    if (!prefersReduced && !mobile && finePointer) {
-      tx += (mx - tx) * 0.06;
-      ty += (my - ty) * 0.06;
-      content.style.transform = `translate3d(${tx * 8}px, ${ty * 5}px, 0)`;
-    }
-    pRaf = requestAnimationFrame(tick);
-  };
-
-  if (!mobile && finePointer) {
-    window.addEventListener(
-      'mousemove',
-      (e) => {
-        mx = (e.clientX / window.innerWidth - 0.5) * 2;
-        my = (e.clientY / window.innerHeight - 0.5) * 2;
+  if (fine && !reduced) {
+    hero.addEventListener(
+      'pointermove',
+      (event) => {
+        mx = (event.clientX / Math.max(1, width) - 0.5) * 2;
+        my = (event.clientY / Math.max(1, height) - 0.5) * 2;
       },
       { passive: true },
     );
-    pRaf = requestAnimationFrame(tick);
   }
 
-  let heroHeight = hero.offsetHeight || 1;
-  const onScroll = (y: number) => {
-    const p = Math.min(Math.max(y / (heroHeight * 0.65), 0), 1);
-    hero.style.setProperty('--hero-leave', String(p));
-  };
-  onPageScroll(onScroll);
-  onScroll(pageScrollY());
-
-  const heroWatch = new IntersectionObserver((entries) => {
-    heroVisible = entries.some((entry) => entry.isIntersecting);
-    if (!heroVisible) return;
-    if (!raf && !frozen && !prefersReduced) raf = requestAnimationFrame(loop);
-    if (!pRaf && !prefersReduced && !mobile && finePointer) pRaf = requestAnimationFrame(tick);
+  document.addEventListener('visibilitychange', () => {
+    pageHidden = document.hidden;
+    if (pageHidden) stop();
+    else start();
   });
-  heroWatch.observe(hero);
+
+  const watch = new IntersectionObserver((entries) => {
+    onScreen = entries.some((entry) => entry.isIntersecting);
+    if (onScreen) start();
+    else stop();
+  });
+  watch.observe(hero);
 
   let resizeTimer = 0;
-  window.addEventListener('resize', () => {
+  const observer = new ResizeObserver(() => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
-      heroHeight = hero.offsetHeight || 1;
-      if (raf) cancelAnimationFrame(raf);
       layout();
-      if (prefersReduced || mobile) {
-        frozen = true;
-        draw(performance.now());
-        return;
-      }
-      readyAt = performance.now();
-      start = readyAt;
-      if (!heroVisible) {
-        raf = 0;
-        return;
-      }
-      raf = requestAnimationFrame(loop);
-    }, 120);
+      if (reduced || !running) draw(performance.now());
+    }, 80);
   });
-
-  void raf;
-  void pRaf;
+  observer.observe(hero);
 }

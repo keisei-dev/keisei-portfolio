@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav';
 import SkillsTags from '../components/SkillsTags';
-import ContactSignal from '../components/ContactSignal';
 import WorkProjects from '../components/WorkProjects.astro';
 
 const title = 'Keisei Kondo | Full-Stack Developer';
@@ -37,66 +36,67 @@ const resumeUrl = '/Keisei_Kondo_Resume.pdf';
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
     <meta name="twitter:image:alt" content="Keisei Kondo — Full-Stack Developer in Vancouver" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@300;400&family=Space+Grotesk:wght@500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
 
-    <canvas id="bg" aria-hidden="true"></canvas>
-
     <header class="site-header">
-      <a class="logo" href="#hero">KEISEI</a>
-      <SiteNav client:load />
+      <a class="brand" href="#hero">
+        <span class="brand__name">keisei kondo</span>
+        <span class="brand__tag">full-stack developer</span>
+      </a>
+      <SiteNav />
     </header>
 
     <main id="main-content">
       <section class="hero" id="hero" aria-labelledby="hero-heading">
-        <div class="hero-content" data-hero>
-          <p class="hero-eyebrow">
-            <span class="hero-pulse" aria-hidden="true"></span>
-            Open to full-time roles · Jan 2027 · Vancouver
-          </p>
-          <h1 id="hero-heading" class="hero-title">
-            <span class="visually-hidden">Full-Stack Developer</span>
-            <canvas class="hero-star-title" data-hero-stars aria-hidden="true"></canvas>
-          </h1>
-          <div class="hero-lower" data-hero-line>
-            <p class="hero-lead">
+        <canvas class="hero-dust" data-hero-dust aria-hidden="true"></canvas>
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <p class="eyebrow">Keisei Kondo / Full-Stack Developer</p>
+            <h1 id="hero-heading" class="hero-title">
+              <span>Full-Stack</span>
+              <span class="hero-title__fade">Developer.</span>
+            </h1>
+            <p class="hero-intro">
               I build full-stack TypeScript apps — clear UI, working APIs, production-ready detail.
+              Open to full-time roles from January 2027 in Vancouver.
             </p>
             <div class="hero-actions">
-              <a class="hero-cta" href="#contact">
-                <span class="hero-cta__label">Contact me</span>
-                <span class="hero-cta__icon" aria-hidden="true">
-                  <span class="hero-cta__chevron"></span>
-                </span>
-              </a>
-              <a class="hero-link" href="#projects">See my work</a>
-              <a
-                class="hero-link"
-                href={resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                >Resume</a
-              >
+              <a class="btn btn--solid" href={resumeUrl} target="_blank" rel="noopener noreferrer">Resume</a>
+              <a class="btn btn--line" href="#contact">Contact</a>
+              <a class="btn btn--text" href="https://github.com/keisei-dev" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+          </div>
+          <div class="hero-stage" aria-hidden="true">
+            <div class="stack">
+              <div class="stack__card stack__card--back"></div>
+              <div class="stack__card stack__card--mid"></div>
+              <article class="stack__card stack__card--front">
+                <header class="stack__bar">
+                  <span></span><span></span><span></span>
+                  <p>trim-team.vercel.app</p>
+                </header>
+                <p class="stack__kicker">Shipped</p>
+                <h2>Trim Team Booking</h2>
+                <p class="stack__copy">Staff dashboard. Customers book without an account.</p>
+                <div class="stack__rows" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </div>
+              </article>
             </div>
           </div>
         </div>
-        <a class="hero-scroll" href="#about" aria-label="Scroll to about">
-          <span class="hero-scroll__label">Scroll</span>
-          <span class="hero-scroll__line" aria-hidden="true"></span>
-        </a>
+        <div class="hero-foot">
+          <p>Full-Stack / React / Node.js / TypeScript</p>
+          <a href="#about">scroll <span aria-hidden="true">↓</span></a>
+        </div>
       </section>
 
       <section class="panel" id="about" aria-labelledby="about-heading">
         <div class="panel-body about-body" data-panel data-about>
-          <header class="section-head" data-reveal>
-            <h2 id="about-heading">About</h2>
+          <header class="section-head">
+            <h2 id="about-heading"><span class="kicker">01 —</span> About</h2>
           </header>
 
           <div class="about-grid">
@@ -127,6 +127,7 @@ const resumeUrl = '/Keisei_Kondo_Resume.pdf';
                 <span class="hl">Express</span>,
                 <span class="hl">Socket.IO</span>, and
                 <span class="hl">PostgreSQL</span> on the back end.
+                I use <span class="hl">Git and GitHub</span> and ship to Vercel.
               </p>
             </div>
           </div>
@@ -135,104 +136,52 @@ const resumeUrl = '/Keisei_Kondo_Resume.pdf';
 
       <section class="panel" id="skills" aria-labelledby="skills-heading">
         <div class="panel-body panel-body--wide" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="skills-heading">Skills</h2>
+          <header class="section-head">
+            <h2 id="skills-heading"><span class="kicker">02 —</span> Skills</h2>
           </header>
           <SkillsTags />
-        </div>
-        <div class="marquee" aria-hidden="true">
-          <div class="marquee-track">
-            <span>TypeScript ✦ React ✦ Next.js ✦ Astro ✦ Node.js ✦ PostgreSQL ✦ </span>
-            <span>TypeScript ✦ React ✦ Next.js ✦ Astro ✦ Node.js ✦ PostgreSQL ✦ </span>
-          </div>
         </div>
       </section>
 
       <WorkProjects />
 
-      <section class="panel" id="value" aria-labelledby="value-heading">
+      <section class="panel" id="contact" aria-labelledby="contact-heading">
         <div class="panel-body" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="value-heading">Value</h2>
+          <header class="section-head">
+            <h2 id="contact-heading"><span class="kicker">04 —</span> Contact</h2>
           </header>
-          <p class="lead prose-lead" data-words>What I bring to a team.</p>
-
-          <div class="value-ticker" data-reveal style="--reveal-delay: 0.12s" aria-hidden="true">
-            <div class="value-ticker__track">
-              <span>TypeScript</span>
-              <span>Collaboration</span>
-              <span>Git</span>
-              <span>Full-stack</span>
-              <span>PostgreSQL</span>
-              <span>Vercel</span>
-              <span>TypeScript</span>
-              <span>Collaboration</span>
-              <span>Git</span>
-              <span>Full-stack</span>
-              <span>PostgreSQL</span>
-              <span>Vercel</span>
-            </div>
-          </div>
-
-          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
-            <p class="copy prose-line" style="--l: 0">
-              Team development with
-              <span class="hl">Git and GitHub</span>, shipping
-              <span class="hl">Next.js</span>,
-              <span class="hl">Astro</span>, and
-              <span class="hl">Express</span> apps to Vercel.
-            </p>
-            <p class="copy prose-line" style="--l: 1">
-              I'm open to full-time roles from January 2027.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel gas-panel" id="contact" aria-labelledby="contact-heading">
-        <div class="panel-body" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="contact-heading">Contact</h2>
-          </header>
-          <p class="lead prose-lead" data-words>Available for full-time roles from January 2027.</p>
-          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
+          <p class="lead">Available for full-time roles from January 2027.</p>
+          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.12s">
             <p class="copy prose-line" style="--l: 0">
               Hiring a
               <span class="hl">full-stack developer</span> in
               <span class="hl">Vancouver</span>?
-            </p>
-            <p class="copy prose-line" style="--l: 1">
-              I'd like to hear about the role — interviews, take-homes, and next steps welcome.
+              I'd like to hear about the role.
             </p>
           </div>
-          <div class="contact-actions" data-reveal style="--reveal-delay: 0.16s">
-            <ContactSignal client:load />
-            <ul class="contact-links" role="list">
-              <li>
-                <a class="contact-link" href={resumeUrl} target="_blank" rel="noopener noreferrer"
-                  >Resume</a
-                >
-              </li>
-              <li>
-                <a
-                  class="contact-link"
-                  href="https://www.linkedin.com/in/keisei-kondo-0bab093a3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >LinkedIn</a
-                >
-              </li>
-              <li>
-                <a
-                  class="contact-link"
-                  href="https://github.com/keisei-dev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >GitHub</a
-                >
-              </li>
-            </ul>
-          </div>
+          <ul class="contact-links" role="list">
+            <li>
+              <a class="contact-link" href="mailto:keisei20001206@gmail.com">Email</a>
+            </li>
+            <li>
+              <a
+                class="contact-link"
+                href="https://www.linkedin.com/in/keisei-kondo-0bab093a3"
+                target="_blank"
+                rel="noopener noreferrer"
+                >LinkedIn</a
+              >
+            </li>
+            <li>
+              <a
+                class="contact-link"
+                href="https://github.com/keisei-dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                >GitHub</a
+              >
+            </li>
+          </ul>
         </div>
         <p class="footer">© Keisei Kondo</p>
       </section>
