@@ -276,6 +276,8 @@
 #projects.work-scroll .project-list > li {
   flex: 0 0 min(720px, 80vw);
   width: min(720px, 80vw);
+  transform-origin: center center;
+  will-change: transform;
 }
 #projects.work-scroll .project-card,
 #projects.work-scroll .project-note {
@@ -317,6 +319,9 @@
   flex: 0 0 min(720px, 80cqi);
   width: min(720px, 80cqi);
   scroll-snap-align: center;
+  transform: none !important;
+  opacity: 1 !important;
+  will-change: auto;
 }
 #projects.work-snap .project-note {
   margin-top: 0;

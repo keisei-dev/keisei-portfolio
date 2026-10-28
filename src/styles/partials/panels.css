@@ -1,4 +1,13 @@
 /* PANELS — centered, no cards */
+#hero,
+#about,
+#skills,
+#projects,
+#value,
+#contact {
+  scroll-margin-top: 4.5rem;
+}
+
 .panel {
   min-height: 100vh; display: flex; align-items: center;
   justify-content: center;

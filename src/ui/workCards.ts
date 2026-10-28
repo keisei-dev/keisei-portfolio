@@ -1,7 +1,20 @@
+import { onPageScroll, pageScrollY, refreshScrollBounds, scrollPageTo } from './smoothScroll';
+
 const CARD_SCROLL_VH = 0.8;
+
+type Metrics = {
+  sectionTop: number;
+  range: number;
+  maxShift: number;
+  stride: number;
+  cardWidth: number;
+  pad: number;
+  viewportWidth: number;
+};
 
 /**
  * Desktop: pin Work and map vertical scroll to a horizontal card track.
+ * The track reads the smooth-scroll value directly. It never calls scrollTo.
  * Phones: a native sideways row with scroll-snap.
  * Reduced motion and no JS leave the readable grid in place.
  */
@@ -31,20 +44,32 @@ export function initWorkCards() {
   lead?.insertAdjacentElement('afterend', progress);
 
   const mobileQuery = window.matchMedia('(max-width: 767px)');
-  let ticking = false;
-
-  const stride = () => {
-    const items = slides();
-    if (items.length < 2) return items[0]?.offsetWidth || 1;
-    return items[1].offsetLeft - items[0].offsetLeft;
+  let cards: HTMLElement[] = [];
+  let metrics: Metrics = {
+    sectionTop: 0,
+    range: 1,
+    maxShift: 0,
+    stride: 1,
+    cardWidth: 0,
+    pad: 0,
+    viewportWidth: 1,
   };
-
-  const maxShift = () => Math.max(0, list.scrollWidth - viewport.clientWidth);
+  let labelIndex = -1;
 
   const setProgressLabel = (index: number) => {
-    const total = slides().length;
+    if (index === labelIndex) return;
+    labelIndex = index;
+    const total = cards.length;
     const n = Math.min(total, Math.max(1, index + 1));
     progress.textContent = `${n} / ${total}`;
+  };
+
+  const clearCardMotion = () => {
+    list.style.transform = '';
+    for (const slide of cards) {
+      slide.style.transform = '';
+      slide.style.opacity = '';
+    }
   };
 
   const sizeCards = () => {
@@ -52,41 +77,68 @@ export function initWorkCards() {
     const card = Math.min(720, width * 0.8);
     const pad = Math.max(0, (width - card) / 2);
     list.style.paddingInline = `${pad}px`;
-    slides().forEach((slide) => {
+    cards.forEach((slide) => {
       slide.style.flexBasis = `${card}px`;
       slide.style.width = `${card}px`;
     });
+    return { width, card, pad };
   };
 
   const clearCardSize = () => {
     list.style.paddingInline = '';
-    slides().forEach((slide) => {
+    cards.forEach((slide) => {
       slide.style.flexBasis = '';
       slide.style.width = '';
     });
   };
 
-  const measureDesktop = () => {
-    sizeCards();
-    const travel = maxShift();
-    const step = stride();
-    const cards = step > 0 ? travel / step : slides().length - 1;
-    const distance = Math.max(window.innerHeight, cards * CARD_SCROLL_VH * window.innerHeight);
+  const measure = () => {
+    cards = slides();
+    if (mobileQuery.matches) {
+      clearCardSize();
+      clearCardMotion();
+      section.style.height = '';
+      labelIndex = -1;
+      return;
+    }
+    const { width, card, pad } = sizeCards();
+    const stride =
+      cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : card || 1;
+    const maxShift = Math.max(0, list.scrollWidth - width);
+    const steps = stride > 0 ? maxShift / stride : cards.length - 1;
+    const distance = Math.max(window.innerHeight, steps * CARD_SCROLL_VH * window.innerHeight);
     section.style.height = `${window.innerHeight + distance}px`;
+    metrics = {
+      sectionTop: section.offsetTop,
+      range: Math.max(1, section.offsetHeight - window.innerHeight),
+      maxShift,
+      stride: stride || 1,
+      cardWidth: card,
+      pad,
+      viewportWidth: width,
+    };
+    refreshScrollBounds();
   };
 
-  const scrollProgress = () => {
-    const range = section.offsetHeight - window.innerHeight;
-    if (range <= 0) return 0;
-    const scrolled = Math.min(Math.max(-section.getBoundingClientRect().top, 0), range);
-    return scrolled / range;
-  };
-
-  const paintDesktop = () => {
-    const shift = scrollProgress() * maxShift();
+  const paint = (scrollY: number) => {
+    if (mobileQuery.matches) return;
+    const scrolled = Math.min(Math.max(scrollY - metrics.sectionTop, 0), metrics.range);
+    const progress = metrics.range > 0 ? scrolled / metrics.range : 0;
+    const shift = progress * metrics.maxShift;
     list.style.transform = `translate3d(${-shift}px, 0, 0)`;
-    const step = stride();
-    setProgressLabel(step > 0 ? Math.round(shift / step) : 0);
+
+    const center = metrics.viewportWidth * 0.5;
+    const reach = metrics.stride;
+    for (let i = 0; i < cards.length; i++) {
+      const cardCenter = metrics.pad + metrics.cardWidth * 0.5 + i * reach - shift;
+      const t = Math.min(1, Math.abs(cardCenter - center) / reach);
+      const eased = t * t * (3 - 2 * t);
+      const scale = 1 - 0.06 * eased;
+      const opacity = 1 - 0.5 * eased;
+      cards[i].style.transform = `translate3d(0, 0, 0) scale(${scale})`;
+      cards[i].style.opacity = String(opacity);
+    }
+    setProgressLabel(Math.round(shift / reach));
   };
 
   const paintSnap = () => {
@@ -102,6 +154,8 @@ export function initWorkCards() {
         best = i;
       }
     });
+    cards = items;
+    labelIndex = -1;
     setProgressLabel(best);
   };
 
@@ -109,32 +163,33 @@ export function initWorkCards() {
     const mobile = mobileQuery.matches;
     section.classList.toggle('work-scroll', !mobile);
     section.classList.toggle('work-snap', mobile);
-    list.style.transform = '';
     if (mobile) {
-      clearCardSize();
-      section.style.height = '';
+      measure();
       paintSnap();
       return;
     }
-    measureDesktop();
-    paintDesktop();
+    measure();
+    paint(pageScrollY());
   };
 
-  const onScroll = () => {
-    if (mobileQuery.matches || ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      ticking = false;
-      if (!mobileQuery.matches) paintDesktop();
-    });
+  let resizeTimer = 0;
+  const scheduleMeasure = () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(applyMode, 80);
   };
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', applyMode, { passive: true });
-  viewport.addEventListener('scroll', () => {
-    if (mobileQuery.matches) paintSnap();
-  }, { passive: true });
+  onPageScroll(paint);
+  window.addEventListener('resize', scheduleMeasure, { passive: true });
+  const observer = new ResizeObserver(scheduleMeasure);
+  observer.observe(viewport);
   mobileQuery.addEventListener('change', applyMode);
+  viewport.addEventListener(
+    'scroll',
+    () => {
+      if (mobileQuery.matches) paintSnap();
+    },
+    { passive: true },
+  );
 
   list.addEventListener('focusin', (event) => {
     const target = event.target;
@@ -150,13 +205,13 @@ export function initWorkCards() {
       return;
     }
 
-    const travel = maxShift();
     const origin = items[0]?.offsetLeft ?? 0;
-    const targetShift = Math.min(Math.max(0, (slide as HTMLElement).offsetLeft - origin), travel);
-    const progress = travel > 0 ? targetShift / travel : 0;
-    const range = section.offsetHeight - window.innerHeight;
-    const top = section.getBoundingClientRect().top + window.scrollY + progress * range;
-    window.scrollTo({ top, behavior: 'auto' });
+    const targetShift = Math.min(
+      Math.max(0, (slide as HTMLElement).offsetLeft - origin),
+      metrics.maxShift,
+    );
+    const next = metrics.maxShift > 0 ? targetShift / metrics.maxShift : 0;
+    scrollPageTo(metrics.sectionTop + next * metrics.range);
   });
 
   applyMode();

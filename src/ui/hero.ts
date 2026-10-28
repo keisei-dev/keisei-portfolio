@@ -1,3 +1,5 @@
+import { onPageScroll, pageScrollY } from './smoothScroll';
+
 type Star = {
   ox: number;
   oy: number;
@@ -159,7 +161,7 @@ export function initHero() {
 
   const layout = () => {
     mobile = isMobileHero();
-    const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.style.width = '100%';
     canvas.style.height = '';
     cssW = Math.max(1, canvas.clientWidth || content.clientWidth);
@@ -285,7 +287,12 @@ export function initHero() {
   };
 
   let raf = 0;
+  let heroVisible = true;
   const loop = (now: number) => {
+    if (!heroVisible) {
+      raf = 0;
+      return;
+    }
     // Mobile: short fade-in only, then fully static (no cursor physics / twinkle loop)
     if (mobile) {
       draw(now);
@@ -350,6 +357,10 @@ export function initHero() {
   let pRaf = 0;
 
   const tick = () => {
+    if (!heroVisible) {
+      pRaf = 0;
+      return;
+    }
     if (!prefersReduced && !mobile && finePointer) {
       tx += (mx - tx) * 0.06;
       ty += (my - ty) * 0.06;
@@ -370,18 +381,27 @@ export function initHero() {
     pRaf = requestAnimationFrame(tick);
   }
 
-  const onScroll = () => {
-    const hh = hero.offsetHeight || 1;
-    const p = Math.min(Math.max(window.scrollY / (hh * 0.65), 0), 1);
+  let heroHeight = hero.offsetHeight || 1;
+  const onScroll = (y: number) => {
+    const p = Math.min(Math.max(y / (heroHeight * 0.65), 0), 1);
     hero.style.setProperty('--hero-leave', String(p));
   };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  onPageScroll(onScroll);
+  onScroll(pageScrollY());
+
+  const heroWatch = new IntersectionObserver((entries) => {
+    heroVisible = entries.some((entry) => entry.isIntersecting);
+    if (!heroVisible) return;
+    if (!raf && !frozen && !prefersReduced) raf = requestAnimationFrame(loop);
+    if (!pRaf && !prefersReduced && !mobile && finePointer) pRaf = requestAnimationFrame(tick);
+  });
+  heroWatch.observe(hero);
 
   let resizeTimer = 0;
   window.addEventListener('resize', () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
+      heroHeight = hero.offsetHeight || 1;
       if (raf) cancelAnimationFrame(raf);
       layout();
       if (prefersReduced || mobile) {
@@ -391,6 +411,10 @@ export function initHero() {
       }
       readyAt = performance.now();
       start = readyAt;
+      if (!heroVisible) {
+        raf = 0;
+        return;
+      }
       raf = requestAnimationFrame(loop);
     }, 120);
   });

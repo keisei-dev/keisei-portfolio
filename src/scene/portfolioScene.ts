@@ -252,7 +252,7 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   if (!canvas) return;
 
   const lite = isLiteDevice();
-  const maxDpr = lite ? 1.25 : 2;
+  const maxDpr = lite ? 1.25 : 1.5;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -589,6 +589,7 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   let fovSmoothed = ATMOSPHERES.hero.fov;
 
   function onScroll() {
+    if (!heroVisible) return;
     const y = window.scrollY;
     const dy = Math.abs(y - lastY);
     // Soft impulse — animate loop blends this in over time
@@ -621,9 +622,17 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
   const dustAttr = dustGeo.getAttribute('position') as THREE.BufferAttribute;
   const streakAttr = streakGeo.getAttribute('position') as THREE.BufferAttribute;
 
+  let heroVisible = true;
+  let loopOn = false;
+
   function animate(timestamp?: number) {
     if (reducedMotion) {
+      loopOn = false;
       renderer.render(scene, camera);
+      return;
+    }
+    if (!heroVisible || document.hidden) {
+      loopOn = false;
       return;
     }
     requestAnimationFrame(animate);
@@ -817,11 +826,30 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
 
     renderer.render(scene, camera);
   }
-  animate();
+
+  function ensureLoop() {
+    if (loopOn || reducedMotion || !heroVisible || document.hidden) return;
+    loopOn = true;
+    requestAnimationFrame(animate);
+  }
+
+  const heroEl = document.getElementById('hero');
+  if (heroEl) {
+    const heroWatch = new IntersectionObserver((entries) => {
+      heroVisible = entries.some((entry) => entry.isIntersecting);
+      if (heroVisible) {
+        measureSections();
+        ensureLoop();
+      }
+    });
+    heroWatch.observe(heroEl);
+  }
+  if (reducedMotion) renderer.render(scene, camera);
+  else ensureLoop();
 
   function onResize() {
     const nextLite = isLiteDevice();
-    const nextDpr = Math.min(window.devicePixelRatio || 1, nextLite ? 1.25 : 2);
+    const nextDpr = Math.min(window.devicePixelRatio || 1, nextLite ? 1.25 : 1.5);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setPixelRatio(nextDpr);
@@ -837,7 +865,7 @@ export function initPortfolioScene({ canvas }: SceneOptions) {
       renderer.render(scene, camera);
       return;
     }
-    requestAnimationFrame(animate);
+    ensureLoop();
   };
   motionMq.addEventListener('change', onMotionChange);
 }
