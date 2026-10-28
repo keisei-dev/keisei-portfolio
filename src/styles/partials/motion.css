@@ -128,13 +128,8 @@
   .section-head h2::after { transform: none; transition: none; animation: none; }
   .project-card:hover,
   .project-feature:hover { transform: none; }
-  html.work-animate .project-card,
-  html.work-animate .project-note,
-  html.work-animate .project-card.is-in,
-  html.work-animate .project-note.is-in {
-    opacity: 1;
-    transform: none;
-    animation: none;
+  #projects.work-carousel .project-list {
+    transition: none;
   }
   .feature-word,
   [data-feature-word] {
