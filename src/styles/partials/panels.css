@@ -61,14 +61,14 @@
   font-weight: 600;
   letter-spacing: -0.055em;
   line-height: 0.95;
-  color: #fafafa;
+  color: var(--text);
 }
 .kicker {
   font-family: var(--font-m);
   font-weight: 500;
   font-size: 0.34em;
   letter-spacing: 0.01em;
-  color: #8d8d95;
+  color: var(--muted);
   margin-right: 0.28em;
   vertical-align: 0.28em;
 }
@@ -78,7 +78,7 @@
   font-weight: 500;
   font-size: clamp(1.2rem, 2vw, 1.45rem);
   letter-spacing: -0.03em;
-  color: #d4d4d8;
+  color: var(--text-2);
   margin: 0 0 22px;
   line-height: 1.4;
   max-width: var(--measure);
@@ -87,8 +87,8 @@
 }
 .lead[data-words] .word-inner {
   background: none;
-  color: #c5daf5;
-  -webkit-text-fill-color: #c5daf5;
+  color: var(--muted);
+  -webkit-text-fill-color: var(--muted);
 }
 
 .copy {
@@ -110,7 +110,7 @@
   font-weight: 600;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
-  border-bottom: 1.5px solid rgba(107, 149, 214, 0.55);
+  border-bottom: 1.5px solid var(--line-strong);
   padding-bottom: 0.04em;
 }
 
@@ -158,8 +158,8 @@
   padding-bottom: 0.08em;
   background-image: linear-gradient(
     90deg,
-    rgba(169, 198, 239, 0.95),
-    rgba(107, 149, 214, 0.85)
+    var(--accent),
+    var(--muted)
   );
   background-repeat: no-repeat;
   background-position: 0 100%;
@@ -227,7 +227,7 @@
 .value-ticker__track span::after {
   content: '✦';
   margin-left: 1.6rem;
-  color: rgba(169, 198, 239, 0.45);
+  color: var(--line-strong);
 }
 @keyframes valueTicker {
   from { transform: translateX(0); }
