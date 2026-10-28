@@ -2,7 +2,15 @@
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav';
 import SkillsTags from '../components/SkillsTags';
-import ContactSignal from '../components/ContactSignal';
+import WorkProjects from '../components/WorkProjects.astro';
+
+const title = 'Keisei Kondo | Full-Stack Developer';
+const description =
+  'Keisei Kondo — full-stack developer in Vancouver. TypeScript, React, Next.js, Astro, and Node. Open to full-time roles from January 2027.';
+const site = Astro.site ?? new URL('https://keisei-portfolio.vercel.app');
+const pageUrl = new URL('/', site).href;
+const imageUrl = new URL('/og.png', site).href;
+const resumeUrl = '/Keisei_Kondo_Resume.pdf';
 ---
 
 <!DOCTYPE html>
@@ -11,75 +19,93 @@ import ContactSignal from '../components/ContactSignal';
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Keisei Kondo — front-end developer in Vancouver. Open to full-time roles from January 2027."
-    />
-    <title>Keisei Kondo | Front-End Developer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@300;400&family=Space+Grotesk:wght@500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Keisei Kondo" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Keisei Kondo — Full-Stack Developer in Vancouver" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content="Keisei Kondo — Full-Stack Developer in Vancouver" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
 
-    <canvas id="bg" aria-hidden="true"></canvas>
-
     <header class="site-header">
-      <a class="logo" href="#">KEISEI</a>
-      <SiteNav client:load />
+      <a class="brand" href="#hero">
+        <span class="brand__name">keisei kondo</span>
+        <span class="brand__tag">full-stack developer</span>
+      </a>
+      <SiteNav />
     </header>
 
     <main id="main-content">
       <section class="hero" id="hero" aria-labelledby="hero-heading">
-        <div class="hero-content" data-hero>
-          <p class="hero-eyebrow">
-            <span class="hero-pulse" aria-hidden="true"></span>
-            Open to full-time roles · Jan 2027 · Vancouver
-          </p>
-          <h1 id="hero-heading" class="hero-title">
-            <span class="visually-hidden">Front-End Developer</span>
-            <canvas class="hero-star-title" data-hero-stars aria-hidden="true"></canvas>
-          </h1>
-          <div class="hero-lower" data-hero-line>
-            <p class="hero-lead">
-              I build interfaces that feel
-              <em>intentional</em> — clear UI,
-              <em>smooth interaction</em>, production-ready detail.
+        <canvas class="hero-dust" data-hero-dust aria-hidden="true"></canvas>
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <p class="eyebrow">Keisei Kondo / Full-Stack Developer</p>
+            <h1 id="hero-heading" class="hero-title">
+              <span>Full-Stack</span>
+              <span class="hero-title__fade">Developer.</span>
+            </h1>
+            <p class="hero-intro">
+              I build full-stack TypeScript apps — clear UI, working APIs, production-ready detail.
+              Open to full-time roles from January 2027 in Vancouver.
             </p>
             <div class="hero-actions">
-              <a class="hero-cta" href="#contact">
-                <span class="hero-cta__label">Contact me</span>
-                <span class="hero-cta__icon" aria-hidden="true">
-                  <span class="hero-cta__chevron"></span>
-                </span>
-              </a>
-              <a class="hero-link" href="#projects">See my work</a>
+              <a class="btn btn--solid" href={resumeUrl} target="_blank" rel="noopener noreferrer">Resume</a>
+              <a class="btn btn--line" href="#contact">Contact</a>
+              <a class="btn btn--text" href="https://github.com/keisei-dev" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+          </div>
+          <div class="hero-stage" aria-hidden="true">
+            <div class="stack">
+              <div class="stack__card stack__card--back"></div>
+              <div class="stack__card stack__card--mid"></div>
+              <article class="stack__card stack__card--front">
+                <header class="stack__bar">
+                  <span></span><span></span><span></span>
+                  <p>trim-team.vercel.app</p>
+                </header>
+                <p class="stack__kicker">Shipped</p>
+                <h2>Trim Team Booking</h2>
+                <p class="stack__copy">Staff dashboard. Customers book without an account.</p>
+                <div class="stack__rows" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </div>
+              </article>
             </div>
           </div>
         </div>
-        <a class="hero-scroll" href="#about" aria-label="Scroll to about">
-          <span class="hero-scroll__label">Scroll</span>
-          <span class="hero-scroll__line" aria-hidden="true"></span>
-        </a>
+        <div class="hero-foot">
+          <p>Full-Stack / React / Node.js / TypeScript</p>
+          <a href="#about">scroll <span aria-hidden="true">↓</span></a>
+        </div>
       </section>
 
       <section class="panel" id="about" aria-labelledby="about-heading">
         <div class="panel-body about-body" data-panel data-about>
-          <header class="section-head" data-reveal>
-            <h2 id="about-heading">About</h2>
+          <header class="section-head">
+            <h2 id="about-heading"><span class="kicker">01 —</span> About</h2>
           </header>
 
           <div class="about-grid">
             <div class="about-rail" data-reveal style="--reveal-delay: 0.08s">
               <p class="about-name">Keisei Kondo</p>
               <p class="about-meta">
-                Vancouver · JA / EN · From Jan 2027
+                Vancouver · From Jan 2027
               </p>
-              <p class="about-focus">UI · Interaction · Craft</p>
+              <p class="about-focus">Full-Stack Developer</p>
             </div>
 
             <div
@@ -89,15 +115,19 @@ import ContactSignal from '../components/ContactSignal';
               style="--reveal-delay: 0.16s"
             >
               <p class="copy prose-line" style="--l: 0">
-                I turn product ideas into
-                <span class="hl">usable interfaces</span> with
-                <span class="hl">TypeScript</span>,
-                <span class="hl">React</span>, and careful CSS.
+                Web development student at
+                <span class="hl">CICCC</span> in Vancouver, building
+                <span class="hl">full-stack TypeScript</span> applications.
               </p>
               <p class="copy prose-line" style="--l: 1">
-                I care about what users feel —
-                <span class="hl">clarity</span>,
-                <span class="hl">accessibility</span>, and polish that holds up after ship.
+                Shipped work with
+                <span class="hl">Next.js</span>,
+                <span class="hl">Astro</span>, and
+                <span class="hl">React</span> on the front end, and
+                <span class="hl">Express</span>,
+                <span class="hl">Socket.IO</span>, and
+                <span class="hl">PostgreSQL</span> on the back end.
+                I use <span class="hl">Git and GitHub</span> and ship to Vercel.
               </p>
             </div>
           </div>
@@ -106,129 +136,52 @@ import ContactSignal from '../components/ContactSignal';
 
       <section class="panel" id="skills" aria-labelledby="skills-heading">
         <div class="panel-body panel-body--wide" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="skills-heading">Skills</h2>
+          <header class="section-head">
+            <h2 id="skills-heading"><span class="kicker">02 —</span> Skills</h2>
           </header>
           <SkillsTags />
         </div>
-        <div class="marquee" aria-hidden="true">
-          <div class="marquee-track">
-            <span>Front-End ✦ UI/UX ✦ TypeScript ✦ React ✦ Astro ✦ CSS ✦ A11y ✦ Motion ✦</span>
-            <span>Front-End ✦ UI/UX ✦ TypeScript ✦ React ✦ Astro ✦ CSS ✦ A11y ✦ Motion ✦</span>
-          </div>
-        </div>
       </section>
 
-      <section class="panel panel--work" id="projects" aria-labelledby="projects-heading">
-        <div class="panel-body panel-body--projects panel-body--work" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="projects-heading">Work</h2>
-          </header>
-          <p class="lead" data-words>This site is the case study.</p>
+      <WorkProjects />
 
-          <article class="project-feature" data-reveal data-feature style="--reveal-delay: 0.12s">
-            <div class="project-feature__head">
-              <div class="project-feature__meta">
-                <span class="project-feature__index" data-feature-word>01</span>
-                <span class="project-feature__status" data-feature-word>Live</span>
-              </div>
-              <h3 class="project-feature__title" data-feature-words>Interactive Portfolio</h3>
-              <p class="project-feature__role" data-feature-words>Solo front-end build</p>
-            </div>
-
-            <p class="project-feature__summary" data-feature-words>
-              WebGL starfield, interactive title, and scroll-driven motion —
-              built to show UI craft in the browser.
-            </p>
-
-            <ul class="project-feature__tags" aria-label="Technologies">
-              <li data-feature-word>Astro</li>
-              <li data-feature-word>Three.js</li>
-              <li data-feature-word>TypeScript</li>
-              <li data-feature-word>React</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section class="panel" id="value" aria-labelledby="value-heading">
+      <section class="panel" id="contact" aria-labelledby="contact-heading">
         <div class="panel-body" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="value-heading">Value</h2>
+          <header class="section-head">
+            <h2 id="contact-heading"><span class="kicker">04 —</span> Contact</h2>
           </header>
-          <p class="lead prose-lead" data-words>What I bring to a team.</p>
-
-          <div class="value-ticker" data-reveal style="--reveal-delay: 0.12s" aria-hidden="true">
-            <div class="value-ticker__track">
-              <span>Clarity</span>
-              <span>Craft</span>
-              <span>Accessibility</span>
-              <span>Motion</span>
-              <span>Collaboration</span>
-              <span>Ship quality</span>
-              <span>Clarity</span>
-              <span>Craft</span>
-              <span>Accessibility</span>
-              <span>Motion</span>
-              <span>Collaboration</span>
-              <span>Ship quality</span>
-            </div>
-          </div>
-
-          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
-            <p class="copy prose-line" style="--l: 0">
-              <span class="hl">Pixel-aware UI</span> with clean components, readable code, and
-              motion that supports the product — not noise.
-            </p>
-            <p class="copy prose-line" style="--l: 1">
-              I communicate in
-              <span class="hl">Japanese and English</span>, take feedback well, and ship front-end
-              work that is ready for real users.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel gas-panel" id="contact" aria-labelledby="contact-heading">
-        <div class="panel-body" data-panel>
-          <header class="section-head" data-reveal>
-            <h2 id="contact-heading">Contact</h2>
-          </header>
-          <p class="lead prose-lead" data-words>Available for full-time roles from January 2027.</p>
-          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.2s">
+          <p class="lead">Available for full-time roles from January 2027.</p>
+          <div class="prose-copy" data-prose-copy data-reveal style="--reveal-delay: 0.12s">
             <p class="copy prose-line" style="--l: 0">
               Hiring a
-              <span class="hl">front-end developer</span> in
-              <span class="hl">Vancouver</span> or on a remote-friendly team?
-            </p>
-            <p class="copy prose-line" style="--l: 1">
-              I'd love to hear about the role —
-              interviews, take-homes, and next steps welcome.
+              <span class="hl">full-stack developer</span> in
+              <span class="hl">Vancouver</span>?
+              I'd like to hear about the role.
             </p>
           </div>
-          <div class="contact-actions" data-reveal style="--reveal-delay: 0.16s">
-            <ContactSignal client:load />
-            <ul class="contact-links" role="list">
-              <li>
-                <a
-                  class="contact-link"
-                  href="https://www.linkedin.com/in/keisei-kondo-0bab093a3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >LinkedIn</a
-                >
-              </li>
-              <li>
-                <a
-                  class="contact-link"
-                  href="https://github.com/keisei-dev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >GitHub</a
-                >
-              </li>
-            </ul>
-          </div>
+          <ul class="contact-links" role="list">
+            <li>
+              <a class="contact-link" href="mailto:keisei20001206@gmail.com">Email</a>
+            </li>
+            <li>
+              <a
+                class="contact-link"
+                href="https://www.linkedin.com/in/keisei-kondo-0bab093a3"
+                target="_blank"
+                rel="noopener noreferrer"
+                >LinkedIn</a
+              >
+            </li>
+            <li>
+              <a
+                class="contact-link"
+                href="https://github.com/keisei-dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                >GitHub</a
+              >
+            </li>
+          </ul>
         </div>
         <p class="footer">© Keisei Kondo</p>
       </section>

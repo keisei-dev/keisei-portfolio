@@ -123,14 +123,14 @@
 
 @media (max-width: 720px) {
   .about-body {
-    text-align: center;
+    text-align: left;
   }
   .about-grid {
     grid-template-columns: 1fr;
     gap: 22px;
   }
   .about-rail {
-    align-items: center;
+    align-items: flex-start;
     transform: translate3d(0, 12px, 0);
   }
   .about-name {
@@ -147,8 +147,8 @@
   }
   .about-copy {
     padding: 18px 0 0;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
     transform: translate3d(0, 16px, 0);
   }
   .about-copy::before {

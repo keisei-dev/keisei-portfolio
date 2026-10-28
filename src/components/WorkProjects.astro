@@ -1,0 +1,148 @@
+---
+type Project = {
+  index: string;
+  title: string;
+  date: string;
+  dateTime: string;
+  role: string;
+  summary: string;
+  tags: string[];
+  live?: string;
+  github?: string;
+};
+
+const projects: Project[] = [
+  {
+    index: '01',
+    title: 'Trim Team Booking App',
+    date: 'Sep 2026',
+    dateTime: '2026-09',
+    role: 'Team · Built the staff dashboard',
+    summary:
+      'Staff dashboard for a Metro Vancouver lawn-care app. Customers book without an account; staff filter, edit, and close jobs after signing in.',
+    tags: ['Next.js (App Router)', 'TypeScript', 'Tailwind CSS', 'Neon Postgres'],
+    live: 'https://trim-team.vercel.app',
+    github: 'https://github.com/Cornerstone-CICCC/booking-app-midterm-trim-team',
+  },
+  {
+    index: '02',
+    title: 'Unsplash Landing Page Recreation',
+    date: 'Sep 2026',
+    dateTime: '2026-09',
+    role: 'Individual',
+    summary:
+      "Responsive recreation of Unsplash's landing page as typed Next.js sections, with signup stored in Supabase through Web3Forms.",
+    tags: ['Next.js (App Router)', 'TypeScript', 'Web3Forms', 'Supabase'],
+    live: 'https://unsplash-keisei.vercel.app',
+    github: 'https://github.com/keisei-dev/unsplash-clone',
+  },
+  {
+    index: '03',
+    title: 'Player Performance Explorer',
+    date: 'Jul 2026',
+    dateTime: '2026-07',
+    role: 'Individual',
+    summary:
+      'Full-stack explorer for FIFA World Cup 2026 player data, with CRUD, search, filters, and a rankings join over PostgreSQL.',
+    tags: ['Astro', 'TypeScript', 'Express', 'PostgreSQL'],
+    github: 'https://github.com/keisei-dev/player-stats',
+  },
+  {
+    index: '04',
+    title: 'Real-Time Chat App',
+    date: 'Jun 2026',
+    dateTime: '2026-06',
+    role: 'Team · Bootstrapped the app · 4 PRs merged',
+    summary:
+      'Bootstrapped the Express and Socket.IO backend plus the Astro client: copy, local delete, unsend, and a built-in Random room.',
+    tags: ['Astro', 'TypeScript', 'Tailwind CSS', 'Express', 'Socket.IO'],
+    github:
+      'https://github.com/Cornerstone-CICCC/final-project-full-stack-real-time-app-patrick-kingdom',
+  },
+];
+---
+
+<section class="panel panel--work" id="projects" aria-labelledby="projects-heading">
+  <div class="panel-body panel-body--projects panel-body--work" data-panel>
+    <header class="section-head">
+      <h2 id="projects-heading"><span class="kicker">03 —</span> Work</h2>
+    </header>
+    <p class="lead" data-words>Shipped projects, newest first.</p>
+
+    <div class="work-slider">
+    <div class="work-viewport" data-lenis-prevent-touch>
+    <ol class="project-list">
+      {
+        projects.map((project, i) => (
+          <li>
+            <article class="project-card">
+              <div class="project-card__top">
+                <span class="project-card__index">{project.index}</span>
+                <time class="project-card__date" datetime={project.dateTime}>
+                  {project.date}
+                </time>
+              </div>
+              <h3 class="project-card__title">{project.title}</h3>
+              <p class="project-card__role">{project.role}</p>
+              <p class="project-card__desc">{project.summary}</p>
+              <ul class="project-card__tags" aria-label="Technologies">
+                {project.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+              <div class="project-card__actions">
+                {project.live && (
+                  <a
+                    class="project-btn project-btn--live"
+                    href={project.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Live
+                  </a>
+                )}
+                {project.github && (
+                  <a
+                    class="project-btn"
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub
+                  </a>
+                )}
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+    </div>
+
+    <article class="project-note">
+      <div class="project-note__main">
+        <p class="project-note__index">05</p>
+        <div>
+          <h3 class="project-note__title">Interactive Portfolio</h3>
+          <p class="project-note__role">Individual · This site</p>
+        </div>
+      </div>
+      <p class="project-note__desc">
+        Canvas starfield and a scroll-driven project track — this page, built with Astro, React, and TypeScript.
+      </p>
+      <ul class="project-card__tags" aria-label="Technologies">
+        <li>Astro</li>
+        <li>TypeScript</li>
+        <li>React</li>
+      </ul>
+      <a
+        class="project-btn"
+        href="https://github.com/keisei-dev/keisei-portfolio"
+        target="_blank"
+        rel="noopener noreferrer"
+        >GitHub</a
+      >
+    </article>
+    </div>
+  </div>
+</section>
