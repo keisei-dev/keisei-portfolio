@@ -4,7 +4,7 @@ Space-themed portfolio for a **Full-Stack Developer**, built with **Astro**, **R
 
 A black starfield runs behind the page. The hero title (“Full-Stack Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
 
-**Positioning:** Vancouver · open to full-time roles from January 2027 · Japanese (native) / English
+**Positioning:** Vancouver · open to full-time roles from January 2027
 
 **Resume:** [/Keisei_Kondo_Resume.pdf](https://keisei-portfolio.vercel.app/Keisei_Kondo_Resume.pdf)
 
@@ -96,7 +96,7 @@ keisei-portfolio/
 2. **About** — CICCC web development student; full-stack TypeScript  
 3. **Skills** — languages, frontend, backend, database, and tools from the resume  
 4. **Work** — Trim Team Booking App, Unsplash Landing Page Recreation, Player Performance Explorer, Real-Time Chat App, plus this site  
-5. **Value** — team Git/GitHub work, Japanese (native) and English  
+5. **Value** — team Git/GitHub work, open to full-time roles from January 2027  
 6. **Contact**
    - Email: [keisei20001206@gmail.com](mailto:keisei20001206@gmail.com)
    - LinkedIn: [keisei-kondo](https://www.linkedin.com/in/keisei-kondo-0bab093a3)
