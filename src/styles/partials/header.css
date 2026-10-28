@@ -19,33 +19,6 @@
   color: var(--ink);
   text-decoration: none;
 }
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: clamp(16px, 2.4vw, 28px);
-  pointer-events: auto;
-}
-
-.header-resume {
-  font-family: var(--font-m);
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--ink);
-  border-bottom: 1px solid rgba(238, 243, 250, 0.35);
-  padding-bottom: 3px;
-  line-height: 1;
-}
-.header-resume:hover {
-  color: #fff;
-  border-bottom-color: var(--accent);
-}
-.header-resume:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
-
 .logo:hover { color: var(--accent); }
 .logo:focus-visible {
   outline: 2px solid var(--accent); outline-offset: 4px;
@@ -323,13 +296,6 @@ main {
   }
   .logo {
     font-size: 1.15rem;
-  }
-  .header-actions {
-    gap: 12px;
-  }
-  .header-resume {
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
   }
   .site-nav {
     width: 100%;
