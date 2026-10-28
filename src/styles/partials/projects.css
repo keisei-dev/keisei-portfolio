@@ -223,6 +223,39 @@
   margin-left: auto;
 }
 
+/* Entrance: hidden only after the inline script opts in. No JS means cards stay visible. */
+html.work-animate .project-card,
+html.work-animate .project-note {
+  opacity: 0;
+  transform: translateX(52px);
+}
+html.work-animate .project-card.is-in,
+html.work-animate .project-note.is-in {
+  animation: workCardIn 560ms ease-out both;
+  animation-delay: calc(var(--enter, 0) * 120ms);
+}
+html.work-animate .project-card.is-settled,
+html.work-animate .project-note.is-settled {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+@media (min-width: 721px) {
+  html.work-animate .project-card.is-settled:hover {
+    transform: translateY(-3px);
+  }
+}
+@keyframes workCardIn {
+  from {
+    opacity: 0;
+    transform: translateX(52px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (max-width: 900px) {
   .project-list {
     grid-template-columns: 1fr;

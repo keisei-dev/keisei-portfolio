@@ -62,6 +62,11 @@ const projects: Project[] = [
 ];
 ---
 
+<script is:inline>
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('work-animate');
+  }
+</script>
 <section class="panel panel--work" id="projects" aria-labelledby="projects-heading">
   <div class="panel-body panel-body--projects panel-body--work" data-panel>
     <header class="section-head" data-reveal>
@@ -73,7 +78,7 @@ const projects: Project[] = [
       {
         projects.map((project, i) => (
           <li>
-            <article class="project-card" data-reveal style={`--reveal-delay: ${0.08 + i * 0.06}s`}>
+            <article class="project-card" style={`--enter: ${i}`}>
               <div class="project-card__top">
                 <span class="project-card__index">{project.index}</span>
                 <time class="project-card__date" datetime={project.dateTime}>
@@ -116,7 +121,7 @@ const projects: Project[] = [
       }
     </ol>
 
-    <article class="project-note" data-reveal style="--reveal-delay: 0.32s">
+    <article class="project-note" style="--enter: 4">
       <div class="project-note__main">
         <p class="project-note__index">05</p>
         <div>
