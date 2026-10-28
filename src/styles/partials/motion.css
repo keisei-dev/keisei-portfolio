@@ -135,6 +135,14 @@
     transform: none;
   }
   .tags li[data-reveal].in-view { animation: none; }
+  .skill-item,
+  .skill-group.in-view .skill-item {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .skill-item:hover,
+  .skill-item:focus-visible { transform: none; }
   .tag:hover::before,
   .tag:focus-visible::before {
     animation: none;

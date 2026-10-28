@@ -94,12 +94,11 @@ keisei-portfolio/
 
 1. **Hero** — Full-Stack Developer (star text), short pitch, contact / work / resume · open from Jan 2027 · Vancouver  
 2. **About** — CICCC web development student; full-stack TypeScript  
-3. **Skills** — languages, frontend, backend, database, tools, and spoken languages from the resume  
+3. **Skills** — languages, frontend, backend, database, and tools from the resume  
 4. **Work** — Trim Team Booking App, Unsplash Landing Page Recreation, Player Performance Explorer, Real-Time Chat App, plus this site  
 5. **Value** — team Git/GitHub work, Japanese (native) and English  
 6. **Contact**
    - Email: [keisei20001206@gmail.com](mailto:keisei20001206@gmail.com)
-   - Phone: 604-379-6482
    - LinkedIn: [keisei-kondo](https://www.linkedin.com/in/keisei-kondo-0bab093a3)
    - GitHub: [keisei-dev](https://github.com/keisei-dev)
    - Resume: [/Keisei_Kondo_Resume.pdf](/Keisei_Kondo_Resume.pdf)
