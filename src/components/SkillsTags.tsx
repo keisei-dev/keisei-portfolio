@@ -19,10 +19,6 @@ const GROUPS = [
     label: 'Tools',
     items: ['Git', 'GitHub', 'Vercel', 'Web3Forms'],
   },
-  {
-    label: 'Languages spoken',
-    items: ['Japanese (Native)', 'English'],
-  },
 ] as const;
 
 export default function SkillsTags() {
