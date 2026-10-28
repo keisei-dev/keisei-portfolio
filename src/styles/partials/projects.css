@@ -226,49 +226,69 @@
 /* Scroll-driven track. Without the class, the list stays a grid. */
 #projects.work-scroll {
   display: block;
+  width: 100%;
+  max-width: none;
   padding: 0;
   overflow: visible;
 }
 #projects.work-scroll .panel-body--work {
   position: sticky;
   top: 0;
+  width: 100%;
+  max-width: none;
   height: 100vh;
   height: 100svh;
   max-height: 100svh;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   justify-content: center;
   box-sizing: border-box;
   padding: 92px 0 36px;
-  overflow: hidden;
+  overflow: visible;
+  text-align: center;
+}
+#projects.work-scroll .section-head,
+#projects.work-scroll .lead,
+#projects.work-scroll .work-progress {
+  width: 100%;
+  max-width: none;
+  text-align: center;
 }
 #projects.work-scroll .work-viewport {
-  container-type: inline-size;
-  overflow: hidden;
   width: 100%;
-  margin-top: 8px;
+  max-width: none;
+  margin: 8px 0 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 #projects.work-scroll .project-list {
   display: flex;
-  gap: 1.25rem;
+  align-items: stretch;
+  gap: 1.5rem;
   width: max-content;
   max-width: none;
   margin: 0;
+  padding-inline: calc((100vw - min(720px, 80vw)) / 2);
   will-change: transform;
 }
 #projects.work-scroll .project-list > li {
-  flex: 0 0 calc(100cqi - 4.5rem);
-  width: calc(100cqi - 4.5rem);
+  flex: 0 0 min(720px, 80vw);
+  width: min(720px, 80vw);
 }
+#projects.work-scroll .project-card,
 #projects.work-scroll .project-note {
-  margin-top: 0;
+  width: 100%;
   height: 100%;
+  margin-top: 0;
 }
 .work-progress {
-  margin: 0 0 4px;
+  margin: 0 auto 4px;
   font-family: var(--font-m);
   font-size: 0.75rem;
   letter-spacing: 0.18em;
+  text-align: center;
   color: var(--accent-2);
 }
 
@@ -280,7 +300,7 @@
   container-type: inline-size;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 4px;
+  scroll-padding-inline: calc((100cqi - min(720px, 80cqi)) / 2);
   -webkit-overflow-scrolling: touch;
   margin-top: 8px;
 }
@@ -290,11 +310,12 @@
   width: max-content;
   max-width: none;
   margin: 0;
+  padding-inline: calc((100cqi - min(720px, 80cqi)) / 2);
   transform: none !important;
 }
 #projects.work-snap .project-list > li {
-  flex: 0 0 calc(100cqi - 1.5rem);
-  width: calc(100cqi - 1.5rem);
+  flex: 0 0 min(720px, 80cqi);
+  width: min(720px, 80cqi);
   scroll-snap-align: center;
 }
 #projects.work-snap .project-note {

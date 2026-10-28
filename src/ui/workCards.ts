@@ -47,7 +47,27 @@ export function initWorkCards() {
     progress.textContent = `${n} / ${total}`;
   };
 
+  const sizeCards = () => {
+    const width = viewport.clientWidth;
+    const card = Math.min(720, width * 0.8);
+    const pad = Math.max(0, (width - card) / 2);
+    list.style.paddingInline = `${pad}px`;
+    slides().forEach((slide) => {
+      slide.style.flexBasis = `${card}px`;
+      slide.style.width = `${card}px`;
+    });
+  };
+
+  const clearCardSize = () => {
+    list.style.paddingInline = '';
+    slides().forEach((slide) => {
+      slide.style.flexBasis = '';
+      slide.style.width = '';
+    });
+  };
+
   const measureDesktop = () => {
+    sizeCards();
     const travel = maxShift();
     const step = stride();
     const cards = step > 0 ? travel / step : slides().length - 1;
@@ -91,6 +111,7 @@ export function initWorkCards() {
     section.classList.toggle('work-snap', mobile);
     list.style.transform = '';
     if (mobile) {
+      clearCardSize();
       section.style.height = '';
       paintSnap();
       return;
@@ -99,13 +120,38 @@ export function initWorkCards() {
     paintDesktop();
   };
 
+  let snapTimer = 0;
+  let snapping = false;
+
+  const snapToCard = () => {
+    if (snapping || mobileQuery.matches) return;
+    const travel = maxShift();
+    const step = stride();
+    if (travel <= 0 || step <= 0) return;
+    const shift = scrollProgress() * travel;
+    const index = Math.round(shift / step);
+    const progress = Math.min(1, (index * step) / travel);
+    const range = section.offsetHeight - window.innerHeight;
+    const top = section.getBoundingClientRect().top + window.scrollY + progress * range;
+    if (Math.abs(window.scrollY - top) < 3) return;
+    snapping = true;
+    window.scrollTo({ top, behavior: 'smooth' });
+    window.setTimeout(() => {
+      snapping = false;
+    }, 450);
+  };
+
   const onScroll = () => {
-    if (mobileQuery.matches || ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      ticking = false;
-      if (!mobileQuery.matches) paintDesktop();
-    });
+    if (mobileQuery.matches || snapping) return;
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        if (!mobileQuery.matches) paintDesktop();
+      });
+    }
+    window.clearTimeout(snapTimer);
+    snapTimer = window.setTimeout(snapToCard, 140);
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
