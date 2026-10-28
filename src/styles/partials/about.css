@@ -77,6 +77,15 @@ html.js .about-grid {
   --draw-y: 0;
 }
 html.js .about-copy .about-word { --w: 0; }
+html.js .about-underline { --u: 0; }
+.about-underline {
+  position: absolute;
+  height: 1px;
+  background: color-mix(in srgb, var(--text) 62%, transparent);
+  transform: scaleX(var(--u, 1));
+  transform-origin: left center;
+  pointer-events: none;
+}
 .about-line {
   position: absolute;
   background: var(--line-strong);
@@ -174,7 +183,8 @@ html.js .about-copy .about-word { --w: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .about-line--h,
-  .about-line--v { transform: none; }
+  .about-line--v,
+  .about-underline { transform: none; }
   .about-copy .hl,
   .about-copy .about-word {
     color: var(--text);
