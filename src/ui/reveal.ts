@@ -68,13 +68,25 @@ function initPanelDrift() {
   if (!panels.length) return;
 
   let ticking = false;
+  const visible = new Set<HTMLElement>();
+  const watch = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      const panel = entry.target;
+      if (!(panel instanceof HTMLElement)) continue;
+      if (entry.isIntersecting) visible.add(panel);
+      else {
+        visible.delete(panel);
+        panel.style.removeProperty('--panel-drift');
+      }
+    }
+  });
+  panels.forEach((panel) => watch.observe(panel));
 
   const update = () => {
     ticking = false;
     const vh = window.innerHeight || 1;
-    for (const panel of panels) {
+    for (const panel of visible) {
       if (!panel.classList.contains('in-view') || panel.classList.contains('panel-body--work')) {
-        panel.style.removeProperty('--panel-drift');
         continue;
       }
       const rect = panel.getBoundingClientRect();

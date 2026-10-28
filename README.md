@@ -1,10 +1,12 @@
 # Keisei Kondo — Portfolio
 
-Space-themed portfolio for a **Front-End Developer**, built with **Astro**, **React**, **TypeScript**, and **Three.js**.
+Space-themed portfolio for a **Full-Stack Developer**, built with **Astro**, **React**, **TypeScript**, and **Three.js**.
 
-A black starfield runs behind the page. The hero title (“Front-End Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
+A black starfield runs behind the page. The hero title (“Full-Stack Developer”) is drawn as twinkling star particles that scatter when you hover. Sections use scroll-driven motion with a glossy navy UI.
 
-**Positioning:** Vancouver · open to full-time roles from January 2027 · JA / EN
+**Positioning:** Vancouver · open to full-time roles from January 2027
+
+**Resume:** [/Keisei_Kondo_Resume.pdf](https://keisei-portfolio.vercel.app/Keisei_Kondo_Resume.pdf)
 
 **Live site:** [keisei-portfolio.vercel.app](https://keisei-portfolio.vercel.app)
 
@@ -58,7 +60,8 @@ keisei-portfolio/
     │   └── index.astro           # Page markup
     ├── components/
     │   ├── SiteNav.tsx           # Hamburger nav (React island)
-    │   ├── SkillsTags.tsx        # Skills tags
+    │   ├── SkillsTags.tsx        # Skills grouped like the resume
+    │   ├── WorkProjects.astro    # Resume project cards
     │   └── ContactSignal.tsx     # Email CTA with signal pulse
     ├── main.ts                   # Entry: scene + UI wiring
     ├── styles/
@@ -89,15 +92,16 @@ keisei-portfolio/
 
 ## Sections
 
-1. **Hero** — Front-End Developer (star text), short pitch, CTAs · open from Jan 2027 · Vancouver  
-2. **About** — UI, interaction, and craft; TypeScript / React / CSS focus  
-3. **Skills** — HTML, CSS, JavaScript, TypeScript, Astro, React, Three.js, Vite, UI/UX, A11y, Git, GitHub  
-4. **Work** — featured case study: this Interactive Portfolio (Astro · Three.js · TypeScript · React)  
-5. **Value** — what I bring to a hiring team (clarity, craft, accessibility, motion)  
+1. **Hero** — Full-Stack Developer (star text), short pitch, contact / work / resume · open from Jan 2027 · Vancouver  
+2. **About** — CICCC web development student; full-stack TypeScript  
+3. **Skills** — languages, frontend, backend, database, and tools from the resume  
+4. **Work** — Trim Team Booking App, Unsplash Landing Page Recreation, Player Performance Explorer, Real-Time Chat App, plus this site  
+5. **Value** — team Git/GitHub work, open to full-time roles from January 2027  
 6. **Contact**
    - Email: [keisei20001206@gmail.com](mailto:keisei20001206@gmail.com)
    - LinkedIn: [keisei-kondo](https://www.linkedin.com/in/keisei-kondo-0bab093a3)
    - GitHub: [keisei-dev](https://github.com/keisei-dev)
+   - Resume: [/Keisei_Kondo_Resume.pdf](/Keisei_Kondo_Resume.pdf)
 
 ---
 
