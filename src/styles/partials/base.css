@@ -1,17 +1,23 @@
 :root {
-  --bg:          #0a0a0b;
-  --ink:         #f4f4f5;
-  --accent:      #f4f4f5;
-  --accent-2:    #a1a1aa;
-  --accent-deep: #3f3f46;
-  --accent-mid:  #71717a;
-  --text:        #f4f4f5;
-  --text-1:      #fafafa;
-  --text-2:      rgba(244, 244, 245, 0.78);
-  --text-3:      rgba(161, 161, 170, 0.9);
-  --muted:       #8b8b93;
-  --line:        rgba(255, 255, 255, 0.08);
-  --panel:       rgba(10, 10, 11, 0.72);
+  --bg:            #0a0a0b;
+  --surface:       #141416;
+  --surface-2:     #1c1c1f;
+  --line:          rgba(255, 255, 255, 0.10);
+  --line-strong:   rgba(255, 255, 255, 0.22);
+  --text:          #f3f3f4;
+  --muted:         #8e8e96;
+  --accent:        #d7dbe2;
+  --solid:         #f4f4f5;
+  --solid-ink:     #111113;
+  --dust:          #dfe3e9;
+  --ink:           var(--text);
+  --accent-2:      var(--muted);
+  --accent-deep:   var(--surface-2);
+  --accent-mid:    var(--muted);
+  --text-1:        var(--text);
+  --text-2:        rgba(243, 243, 244, 0.78);
+  --text-3:        var(--muted);
+  --panel:         var(--surface);
   --font-h:      'Inter Tight', system-ui, sans-serif;
   --font-title:  'Inter Tight', system-ui, sans-serif;
   --font-b:      'Inter Tight', system-ui, sans-serif;
@@ -35,18 +41,6 @@ body {
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 88px 88px;
-  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 78%);
 }
 main,
 .site-header { position: relative; z-index: 1; }

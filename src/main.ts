@@ -5,12 +5,16 @@ import '@fontsource/inter-tight/latin-700.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import 'lenis/dist/lenis.css';
+import { initAboutScrub } from './ui/aboutScrub';
 import { initReveal } from './ui/reveal';
-import { initHero } from './ui/hero';
+import { initHeroDeck } from './ui/heroDeck';
+import { initHeroField } from './ui/heroField';
 import { initSmoothScroll } from './ui/smoothScroll';
 import { initWorkCards } from './ui/workCards';
 
 initSmoothScroll();
-initHero();
+initHeroField();
+initHeroDeck();
+initAboutScrub();
 initReveal();
 initWorkCards();
