@@ -19,6 +19,9 @@ const resumeUrl = '/Keisei_Kondo_Resume.pdf';
     <meta charset="UTF-8" />
     <script is:inline>
       document.documentElement.classList.add('js');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('burst');
+      }
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
