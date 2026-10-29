@@ -1,8 +1,8 @@
 const LINKS = [
-  { href: '#about', label: 'about', index: '01' },
-  { href: '#skills', label: 'skills', index: '02' },
-  { href: '#projects', label: 'work', index: '03' },
-  { href: '#contact', label: 'contact', index: '04' },
+  { href: '#about', label: 'about' },
+  { href: '#skills', label: 'skills' },
+  { href: '#projects', label: 'work' },
+  { href: '#contact', label: 'contact' },
 ] as const;
 
 export default function SiteNav() {
@@ -11,10 +11,7 @@ export default function SiteNav() {
       <ul>
         {LINKS.map((link) => (
           <li key={link.href}>
-            <a href={link.href}>
-              <span className="nav-index">{link.index}</span>
-              {link.label}
-            </a>
+            <a href={link.href}>{link.label}</a>
           </li>
         ))}
       </ul>
