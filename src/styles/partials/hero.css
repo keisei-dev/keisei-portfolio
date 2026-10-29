@@ -86,18 +86,17 @@
   pointer-events: none;
 }
 html.burst .hero-field__dust { opacity: 0; }
+html.field-live .hero-field__layer { visibility: hidden; }
 @media (max-width: 767px) {
   .hero-field__layer { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-field__dust { transform: none; }
-  .hero-field__dust--far,
-  html.burst .hero-field__dust--far { opacity: 0.3; }
-  html.burst .hero-field__dust--fine { opacity: 0.36; }
-  html.burst .hero-field__dust--mid,
-  html.burst .hero-field__dust--near { opacity: 1; }
-  .hero-field__burst { display: none; }
+  .hero-field__dust,
   .hero-field__layer { transform: none; }
+  .hero-field__dust--far { opacity: 0.3; }
+  .hero-field__dust--fine { opacity: 0.36; }
+  .hero-field__dust--mid,
+  .hero-field__dust--near { opacity: 1; }
 }
 
 .hero-layout {
