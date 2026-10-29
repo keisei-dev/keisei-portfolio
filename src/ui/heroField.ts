@@ -240,9 +240,9 @@ export function initHeroField() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (count === 0) {
       const narrow = cssW < 768;
-      const target = Math.round((cssW * cssH) / (narrow ? 165 : 220));
-      const capCount = narrow ? 2400 : 6000;
-      const floor = narrow ? 1400 : 4800;
+      const target = Math.round((cssW * cssH) / (narrow ? 82 : 110));
+      const capCount = narrow ? 6400 : 18000;
+      const floor = narrow ? 900 : 2400;
       seed(Math.max(floor, Math.min(capCount, target)));
     }
   };
