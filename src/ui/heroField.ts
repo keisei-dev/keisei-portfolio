@@ -1,28 +1,12 @@
-type Wave = { ax: number; ay: number; freq: number; phase: number };
-
-type DustLayer = {
-  el: HTMLElement;
-  tile: number;
-  vx: number;
-  vy: number;
-  waves: Wave[];
-  twinkle: { period: number; phase: number; lo: number; hi: number };
-  desktopOnly: boolean;
-};
-
 type HeroWindow = Window & { __heroT?: number; __heroHold?: number | null };
 
-const DUST_IN = 1.02;
-const DUST_SPAN = 0.58;
-const BURST_END = 1.78;
 const PULL_UP0 = 0.04;
 const PULL_UP1 = 0.28;
 const PULL_DOWN0 = 0.78;
 const PULL_DOWN1 = 1.12;
-const FADE_SPAN = 0.48;
 const BUCKETS = 8;
-const ALPHA_MAX = 0.52;
-const TIER_COLOR = ['#aeb8c4', '#d4dae3', '#e6ebf1'];
+const ALPHA_MAX = 0.4;
+const TIER_COLOR = ['#c3cad3', '#d5dbe4', '#e3e8ee'];
 
 const smoother = (t: number) => {
   const c = t <= 0 ? 0 : t >= 1 ? 1 : t;
@@ -38,77 +22,28 @@ const pullOf = (local: number) => {
 };
 
 /**
- * One clock drives the settled dust and a short reload gesture. Specks of
- * three depths ease toward a loose point with inertia and a curl field, then
- * fade out as the drifting dust fades in.
+ * One canvas is the hero dust for the whole visit. Specks swirl toward the
+ * headline, then each one coasts to its own home and keeps drifting there.
  */
 export function initHeroField() {
   const hero = document.getElementById('hero');
   const field = hero?.querySelector<HTMLElement>('.hero-field');
   if (!hero || !field) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const dust = (name: string) => field.querySelector<HTMLElement>(`.hero-field__dust--${name}`);
-  const far = dust('far');
-  const fineDust = dust('fine');
-  const mid = dust('mid');
-  const near = dust('near');
-  if (!far || !fineDust || !mid || !near) return;
-
-  const layers: DustLayer[] = [
-    {
-      el: far,
-      tile: 420,
-      vx: -420 / 190,
-      vy: 420 / 230,
-      waves: [
-        { ax: 16, ay: 9, freq: (Math.PI * 2) / 28, phase: 0.4 },
-        { ax: 7, ay: 13, freq: (Math.PI * 2) / 43, phase: 2.1 },
-      ],
-      twinkle: { period: 14, phase: 0.6, lo: 0.28, hi: 0.32 },
-      desktopOnly: false,
-    },
-    {
-      el: fineDust,
-      tile: 180,
-      vx: 180 / 168,
-      vy: -180 / 204,
-      waves: [
-        { ax: 8, ay: 6, freq: (Math.PI * 2) / 24, phase: 0.2 },
-        { ax: -5, ay: 7, freq: (Math.PI * 2) / 39, phase: 1.5 },
-      ],
-      twinkle: { period: 16, phase: 0.4, lo: 0.34, hi: 0.38 },
-      desktopOnly: false,
-    },
-    {
-      el: mid,
-      tile: 340,
-      vx: 340 / 150,
-      vy: -340 / 176,
-      waves: [
-        { ax: -18, ay: 14, freq: (Math.PI * 2) / 19, phase: 1.2 },
-        { ax: 9, ay: -11, freq: (Math.PI * 2) / 33, phase: 0.3 },
-      ],
-      twinkle: { period: 13, phase: 2.4, lo: 0.96, hi: 1 },
-      desktopOnly: false,
-    },
-    {
-      el: near,
-      tile: 240,
-      vx: -240 / 124,
-      vy: -240 / 148,
-      waves: [
-        { ax: 22, ay: -16, freq: (Math.PI * 2) / 15, phase: 0.8 },
-        { ax: -10, ay: 12, freq: (Math.PI * 2) / 26, phase: 1.7 },
-      ],
-      twinkle: { period: 11, phase: 1.1, lo: 0.96, hi: 1 },
-      desktopOnly: false,
-    },
-  ];
-
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const pointerFine = window.matchMedia('(pointer: fine) and (min-width: 768px)');
-  const desktop = window.matchMedia('(min-width: 768px)');
   const heroWindow = window as HeroWindow;
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'hero-field__burst';
+  canvas.setAttribute('aria-hidden', 'true');
+  field.appendChild(canvas);
+  const ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) {
+    canvas.remove();
+    return;
+  }
+
   let onScreen = true;
   let hidden = document.hidden;
   let raf = 0;
@@ -119,46 +54,40 @@ export function initHeroField() {
   let pointerY = 0;
   let followX = 0;
   let followY = 0;
-  let shownX = '';
-  let shownY = '';
   let cssW = 0;
   let cssH = 0;
   let dpr = 1;
-  let burstDone = false;
-
-  const canvas = document.createElement('canvas');
-  canvas.className = 'hero-field__burst';
-  canvas.setAttribute('aria-hidden', 'true');
-  field.appendChild(canvas);
-  const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) {
-    canvas.remove();
-    burstDone = true;
-  }
-
   let count = 0;
   let farN = 0;
   let midN = 0;
-  let x0 = new Float32Array(0);
-  let y0 = new Float32Array(0);
+
+  let homeX = new Float32Array(0);
+  let homeY = new Float32Array(0);
+  let spawnX = new Float32Array(0);
+  let spawnY = new Float32Array(0);
   let nx = new Float32Array(0);
   let ny = new Float32Array(0);
   let vx = new Float32Array(0);
   let vy = new Float32Array(0);
   let ox = new Float32Array(0);
   let oy = new Float32Array(0);
-  let mass = new Float32Array(0);
+  let gain = new Float32Array(0);
   let attract = new Float32Array(0);
   let delay = new Float32Array(0);
+  let returnAt = new Float32Array(0);
+  let returnDur = new Float32Array(0);
   let base = new Float32Array(0);
   let size = new Float32Array(0);
   let phase = new Float32Array(0);
   let spin = new Float32Array(0);
   let spinAmp = new Float32Array(0);
-  let gain = new Float32Array(0);
-  let fadeAt = new Float32Array(0);
-  let driftX = new Float32Array(0);
-  let driftY = new Float32Array(0);
+  let freq = new Float32Array(0);
+  let freq2 = new Float32Array(0);
+  let ampX = new Float32Array(0);
+  let ampY = new Float32Array(0);
+  let twAmp = new Float32Array(0);
+  let twFreq = new Float32Array(0);
+  let shift = new Float32Array(0);
   let drawX = new Float32Array(0);
   let drawY = new Float32Array(0);
   let drawS = new Float32Array(0);
@@ -169,7 +98,7 @@ export function initHeroField() {
   const cursor = new Int32Array(BUCKETS);
 
   const rand = (() => {
-    let x = 0xc0ffee >>> 0;
+    let x = 0x5eed1e >>> 0;
     return () => {
       x ^= x << 13;
       x >>>= 0;
@@ -182,26 +111,33 @@ export function initHeroField() {
   })();
 
   const alloc = (n: number) => {
-    x0 = new Float32Array(n);
-    y0 = new Float32Array(n);
+    homeX = new Float32Array(n);
+    homeY = new Float32Array(n);
+    spawnX = new Float32Array(n);
+    spawnY = new Float32Array(n);
     nx = new Float32Array(n);
     ny = new Float32Array(n);
     vx = new Float32Array(n);
     vy = new Float32Array(n);
     ox = new Float32Array(n);
     oy = new Float32Array(n);
-    mass = new Float32Array(n);
+    gain = new Float32Array(n);
     attract = new Float32Array(n);
     delay = new Float32Array(n);
+    returnAt = new Float32Array(n);
+    returnDur = new Float32Array(n);
     base = new Float32Array(n);
     size = new Float32Array(n);
     phase = new Float32Array(n);
     spin = new Float32Array(n);
     spinAmp = new Float32Array(n);
-    gain = new Float32Array(n);
-    fadeAt = new Float32Array(n);
-    driftX = new Float32Array(n);
-    driftY = new Float32Array(n);
+    freq = new Float32Array(n);
+    freq2 = new Float32Array(n);
+    ampX = new Float32Array(n);
+    ampY = new Float32Array(n);
+    twAmp = new Float32Array(n);
+    twFreq = new Float32Array(n);
+    shift = new Float32Array(n);
     drawX = new Float32Array(n);
     drawY = new Float32Array(n);
     drawS = new Float32Array(n);
@@ -211,8 +147,8 @@ export function initHeroField() {
 
   const seed = (n: number) => {
     count = n;
-    farN = Math.round(n * 0.72);
-    midN = farN + Math.round(n * 0.22);
+    farN = Math.round(n * 0.62);
+    midN = farN + Math.round(n * 0.3);
     alloc(n);
     const aspect = cssW / Math.max(1, cssH);
     const cols = Math.max(8, Math.round(Math.sqrt(n * aspect)));
@@ -227,48 +163,65 @@ export function initHeroField() {
       pick[j] = swap;
     }
     for (let i = 0; i < n; i += 1) {
-      const cell = pick[i % cells];
+      const cell = pick[i];
       const col = cell % cols;
       const row = (cell / cols) | 0;
-      const px = (col + 0.5 + (rand() - 0.5) * 0.9) / cols;
-      const py = (row + 0.5 + (rand() - 0.5) * 0.9) / rows;
-      x0[i] = px < 0 ? px + 1 : px > 1 ? px - 1 : px;
-      y0[i] = py < 0 ? py + 1 : py > 1 ? py - 1 : py;
-      nx[i] = x0[i];
-      ny[i] = y0[i];
-      const mag = Math.min(1.7, Math.sqrt(-2 * Math.log(Math.max(1e-4, rand()))));
+      const px = (col + 0.5 + (rand() - 0.5) * 0.92) / cols;
+      const py = (row + 0.5 + (rand() - 0.5) * 0.92) / rows;
+      nx[i] = px < 0 ? px + 1 : px > 1 ? px - 1 : px;
+      ny[i] = py < 0 ? py + 1 : py > 1 ? py - 1 : py;
+      spawnX[i] = nx[i];
+      spawnY[i] = ny[i];
+      const tier = i < farN ? 0 : i < midN ? 1 : 2;
+      const hx = rand();
+      const hy = tier === 0 ? rand() : 0.3 + 0.7 * Math.pow(rand(), 0.4);
+      homeX[i] = hx < 0.02 ? 0.02 : hx > 0.98 ? 0.98 : hx;
+      homeY[i] = hy < 0.02 ? 0.02 : hy > 0.98 ? 0.98 : hy;
+      const mag = Math.min(1.6, Math.sqrt(-2 * Math.log(Math.max(1e-4, rand()))));
       const ang = rand() * Math.PI * 2;
       ox[i] = Math.cos(ang) * mag;
       oy[i] = Math.sin(ang) * mag;
-      const tier = i < farN ? 0 : i < midN ? 1 : 2;
-      if (tier === 0) {
-        mass[i] = 1.38 + rand() * 0.28;
-        base[i] = 0.18 + rand() * 0.16;
-        gain[i] = 0.78 + rand() * 0.12;
-        delay[i] = rand() * 0.1;
-        size[i] = 1;
-      } else if (tier === 1) {
-        mass[i] = 1.02 + rand() * 0.16;
-        base[i] = 0.32 + rand() * 0.14;
-        gain[i] = 1 + rand() * 0.1;
-        delay[i] = rand() * 0.06;
-        size[i] = 1;
-      } else {
-        mass[i] = 0.86 + rand() * 0.1;
-        base[i] = 0.42 + rand() * 0.12;
-        gain[i] = 1.12 + rand() * 0.12;
-        delay[i] = rand() * 0.04;
-        size[i] = 2;
-      }
-      const involved = rand() > 0.18;
-      attract[i] = involved ? 0.78 + rand() * 0.2 : 0.12 + rand() * 0.18;
-      if (tier === 0) attract[i] *= 0.92;
       phase[i] = rand() * Math.PI * 2;
       spin[i] = rand() < 0.5 ? -1 : 1;
-      spinAmp[i] = 0.45 + rand() * 0.55;
-      fadeAt[i] = 1.05 + rand() * 0.16;
-      driftX[i] = (rand() - 0.42) * 0.014 * gain[i];
-      driftY[i] = (rand() - 0.5) * 0.012 * gain[i];
+      spinAmp[i] = 0.4 + rand() * 0.55;
+      const involved = rand() > 0.16;
+      attract[i] = involved ? 0.74 + rand() * 0.22 : 0.14 + rand() * 0.2;
+      if (tier === 0) {
+        gain[i] = 0.72 + rand() * 0.12;
+        delay[i] = rand() * 0.12;
+        base[i] = 0.16 + rand() * 0.12;
+        size[i] = 1;
+        ampX[i] = 0.006 + rand() * 0.006;
+        ampY[i] = 0.004 + rand() * 0.005;
+        freq[i] = (Math.PI * 2) / (26 + rand() * 18);
+        twAmp[i] = 0.16;
+        shift[i] = 0.003;
+        attract[i] *= 0.9;
+      } else if (tier === 1) {
+        gain[i] = 0.96 + rand() * 0.1;
+        delay[i] = rand() * 0.07;
+        base[i] = (0.26 + rand() * 0.12) * (0.58 + 0.42 * homeY[i]);
+        size[i] = 1;
+        ampX[i] = 0.01 + rand() * 0.008;
+        ampY[i] = 0.007 + rand() * 0.006;
+        freq[i] = (Math.PI * 2) / (18 + rand() * 12);
+        twAmp[i] = 0.08;
+        shift[i] = 0.006;
+      } else {
+        gain[i] = 1.08 + rand() * 0.12;
+        delay[i] = rand() * 0.04;
+        base[i] = (0.34 + rand() * 0.1) * (0.66 + 0.34 * homeY[i]);
+        size[i] = 2;
+        ampX[i] = 0.014 + rand() * 0.01;
+        ampY[i] = 0.01 + rand() * 0.008;
+        freq[i] = (Math.PI * 2) / (14 + rand() * 8);
+        twAmp[i] = 0.05;
+        shift[i] = 0.01;
+      }
+      freq2[i] = freq[i] * (0.63 + rand() * 0.3);
+      twFreq[i] = (Math.PI * 2) / (9 + rand() * 8);
+      returnAt[i] = 0.64 + rand() * 0.34;
+      returnDur[i] = 0.5 + rand() * 0.7;
     }
   };
 
@@ -282,50 +235,19 @@ export function initHeroField() {
     cssW = nextW;
     cssH = nextH;
     dpr = nextDpr;
-    if (!burstDone && ctx) {
-      canvas.width = Math.round(cssW * dpr);
-      canvas.height = Math.round(cssH * dpr);
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (count === 0) {
       const narrow = cssW < 768;
-      const target = Math.round((cssW * cssH) / (narrow ? 520 : 820));
-      const capCount = narrow ? 780 : 1700;
-      const floor = narrow ? 480 : 1100;
+      const target = Math.round((cssW * cssH) / (narrow ? 165 : 220));
+      const capCount = narrow ? 2400 : 6000;
+      const floor = narrow ? 1400 : 4800;
       seed(Math.max(floor, Math.min(capCount, target)));
     }
   };
 
-  const wrap = (value: number, span: number) => {
-    const m = value % span;
-    return m < 0 ? m + span : m;
-  };
-
-  const dustReveal = () => {
-    if (burstDone || !ctx) return 1;
-    return smoother((time - DUST_IN) / DUST_SPAN);
-  };
-
-  const paintDust = (reveal: number) => {
-    const wide = desktop.matches;
-    for (const layer of layers) {
-      if (layer.desktopOnly && !wide) continue;
-      let x = wrap(layer.vx * time, layer.tile);
-      let y = wrap(layer.vy * time, layer.tile);
-      for (const wave of layer.waves) {
-        const angle = time * wave.freq + wave.phase;
-        x += wave.ax * Math.sin(angle);
-        y += wave.ay * Math.cos(angle);
-      }
-      const breath = 0.5 - 0.5 * Math.cos((time / layer.twinkle.period) * Math.PI * 2 + layer.twinkle.phase);
-      const rest = layer.twinkle.lo + (layer.twinkle.hi - layer.twinkle.lo) * breath;
-      layer.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
-      layer.el.style.opacity = (rest * reveal).toFixed(3);
-    }
-  };
-
   const drawRange = (from: number, to: number) => {
-    if (!ctx) return;
     counts.fill(0);
     for (let i = from; i < to; i += 1) {
       const alpha = drawA[i];
@@ -358,89 +280,109 @@ export function initHeroField() {
     }
   };
 
-  const paintBurst = (dt: number) => {
-    if (!ctx || burstDone) return;
-    if (time >= BURST_END) {
-      burstDone = true;
-      canvas.remove();
-      ctx.globalAlpha = 1;
+  const placeDraw = (i: number, pull: number, focusX: number, focusY: number) => {
+    const breath = 0.5 + 0.5 * Math.cos(time * twFreq[i] + phase[i]);
+    const twinkle = 1 - twAmp[i] + twAmp[i] * breath;
+    const focusDist = Math.sqrt((nx[i] - focusX) ** 2 + ((ny[i] - focusY) * 1.35) ** 2);
+    const nearFocus = focusDist >= 0.28 ? 0 : 1 - focusDist / 0.28;
+    let alpha = base[i] * twinkle * (0.96 + 0.04 * pull + 0.08 * nearFocus * pull);
+    if (alpha < 0.035 || nx[i] < -0.04 || nx[i] > 1.04 || ny[i] < -0.04 || ny[i] > 1.04) {
+      drawA[i] = 0;
       return;
     }
+    if (alpha > ALPHA_MAX) alpha = ALPHA_MAX;
+    drawX[i] = Math.round(nx[i] * cssW * dpr);
+    drawY[i] = Math.round(ny[i] * cssH * dpr);
+    drawS[i] = Math.max(1, Math.round(size[i] * dpr));
+    drawA[i] = alpha;
+  };
+
+  const paint = (dt: number) => {
+    const followBlend = dt > 0 ? 1 - Math.exp(-dt * 5.5) : 0;
+    followX += (pointerX - followX) * followBlend;
+    followY += (pointerY - followY) * followBlend;
     const narrow = cssW < 768;
     const lean = pointerFine.matches ? 1 : 0;
     const focusX = (narrow ? 0.5 : 0.3) + followX * 0.016 * lean;
     const focusY = (narrow ? 0.4 : 0.46) + followY * 0.01 * lean;
-    const rx = narrow ? 0.12 : 0.09;
-    const ry = narrow ? 0.075 : 0.055;
+    const rx = narrow ? 0.16 : 0.14;
+    const ry = narrow ? 0.1 : 0.085;
     const step = dt > 0 ? dt : 0;
 
     for (let i = 0; i < count; i += 1) {
       const local = time - delay[i];
       const pull = pullOf(local);
-      const fade = 1 - smoother((time - fadeAt[i]) / FADE_SPAN);
+      const ret = smoother((time - returnAt[i]) / returnDur[i]);
+      const gather = pull * (1 - ret);
+      const g = gain[i];
+      const ang1 = time * freq[i] + phase[i];
+      const ang2 = time * freq2[i] + phase[i] * 1.6;
+      const hx = homeX[i] + Math.sin(ang1) * ampX[i] + followX * shift[i] * lean;
+      const hy = homeY[i] + Math.cos(ang2) * ampY[i] + followY * shift[i] * 0.7 * lean;
+      const idleVx = Math.cos(ang1) * ampX[i] * freq[i];
+      const idleVy = -Math.sin(ang2) * ampY[i] * freq2[i];
+
       const gx = focusX + ox[i] * rx;
       const gy = focusY + oy[i] * ry;
-      let goalX = x0[i] + (gx - x0[i]) * attract[i];
-      let goalY = y0[i] + (gy - y0[i]) * attract[i];
-      if (goalX < 0.04) goalX = 0.04;
-      else if (goalX > 0.96) goalX = 0.96;
-      if (goalY < 0.04) goalY = 0.04;
-      else if (goalY > 0.96) goalY = 0.96;
-
+      let goalX = spawnX[i] + (gx - spawnX[i]) * attract[i];
+      let goalY = spawnY[i] + (gy - spawnY[i]) * attract[i];
+      if (goalX < 0.03) goalX = 0.03;
+      else if (goalX > 0.97) goalX = 0.97;
+      if (goalY < 0.03) goalY = 0.03;
+      else if (goalY > 0.97) goalY = 0.97;
       const dx = goalX - nx[i];
       const dy = goalY - ny[i];
       const dist = Math.sqrt(dx * dx + dy * dy) + 1e-4;
-      const falloff = smoother((dist - 0.055) / 0.12);
+      const falloff = smoother((dist - 0.05) / 0.14);
       const inv = 1 / dist;
-      const g = gain[i];
-      const strength = pull * 6.8 * g * falloff;
-      const swirl = pull * 1.6 * spinAmp[i] * spin[i] * falloff;
-      const release = smoother((local - PULL_DOWN0) / (PULL_DOWN1 - PULL_DOWN0));
-      const away = release * (0.85 / mass[i]) * g;
-      const fx = nx[i] - focusX;
-      const fy = ny[i] - focusY;
-      const fl = Math.sqrt(fx * fx + fy * fy) + 0.08;
-      const tt = time * 0.42 + phase[i] * 0.15;
-      const n1 = Math.sin(nx[i] * 2.4 + phase[i] + tt);
-      const n2 = Math.cos(ny[i] * 2.1 - tt * 0.75);
-      const n3 = Math.sin((nx[i] + ny[i]) * 1.6 + tt * 0.22);
-      const flow = (0.28 + 0.45 * pull) * g;
+      const strength = gather * 6.4 * g * falloff;
+      const swirl = gather * 1.45 * spinAmp[i] * spin[i] * falloff;
+
+      const hdx = hx - nx[i];
+      const hdy = hy - ny[i];
+      const hdist = Math.sqrt(hdx * hdx + hdy * hdy) + 1e-4;
+      const hFall = hdist / (hdist + 0.06);
+      const hInv = 1 / hdist;
+      const hStrength = ret * 12 * g * hFall;
+      const curl = gather + ret * (1 - ret) * 1.6;
+      const tt = time * 0.4 + phase[i] * 0.15;
+      const n1 = Math.sin(nx[i] * 2.3 + phase[i] + tt);
+      const n2 = Math.cos(ny[i] * 2.05 - tt * 0.72);
+      const n3 = Math.sin((nx[i] + ny[i]) * 1.5 + tt * 0.24);
+      const flow = curl * g * (0.45 + 0.55 * Math.max(falloff, hFall));
+      const arc = ret * (1 - ret) * 2.4 * spin[i] * spinAmp[i];
       const ax =
         dx * inv * strength -
         dy * inv * swirl +
-        (fx / fl) * away +
-        (n2 * 0.7 + n3 * 0.35) * flow;
+        hdx * hInv * hStrength -
+        hdy * hInv * arc +
+        (n2 * 0.65 + n3 * 0.35) * flow;
       const ay =
         dy * inv * strength +
         dx * inv * swirl +
-        (fy / fl) * away +
-        (-n1 * 0.7 + n3 * 0.3) * flow;
+        hdy * hInv * hStrength +
+        hdx * hInv * arc +
+        (-n1 * 0.65 + n3 * 0.3) * flow;
 
       vx[i] += ax * step;
       vy[i] += ay * step;
-      const keep = Math.exp(-(8.2 + 5 * (1 - falloff)) * step);
-      vx[i] = driftX[i] + (vx[i] - driftX[i]) * keep;
-      vy[i] = driftY[i] + (vy[i] - driftY[i]) * keep;
+      const brake = gather > 0.2 && ret < 0.2 ? 1 - falloff : 0;
+      const settle = ret > 0.82 ? (1 - hFall) * ret : 0;
+      const damp = 5.8 + 6.2 * Math.max(brake, settle);
+      const keep = Math.exp(-damp * step);
+      const vTargetX = ret * idleVx;
+      const vTargetY = ret * idleVy;
+      vx[i] = vTargetX + (vx[i] - vTargetX) * keep;
+      vy[i] = vTargetY + (vy[i] - vTargetY) * keep;
       const speed = Math.sqrt(vx[i] * vx[i] + vy[i] * vy[i]);
-      if (speed > 0.95) {
-        const limit = 0.95 / speed;
+      if (speed > 1.05) {
+        const limit = 1.05 / speed;
         vx[i] *= limit;
         vy[i] *= limit;
       }
       nx[i] += vx[i] * step;
       ny[i] += vy[i] * step;
-
-      const focusDist = Math.sqrt((nx[i] - focusX) ** 2 + ((ny[i] - focusY) * 1.35) ** 2);
-      const nearFocus = focusDist >= 0.24 ? 0 : 1 - focusDist / 0.24;
-      const alpha = fade <= 0 ? 0 : base[i] * (0.86 + 0.12 * pull + 0.34 * nearFocus * pull) * fade;
-      if (alpha < 0.04 || nx[i] < -0.04 || nx[i] > 1.04 || ny[i] < -0.04 || ny[i] > 1.04) {
-        drawA[i] = 0;
-        continue;
-      }
-      drawX[i] = Math.round(nx[i] * cssW * dpr);
-      drawY[i] = Math.round(ny[i] * cssH * dpr);
-      drawS[i] = Math.max(1, Math.round(size[i] * dpr));
-      drawA[i] = alpha > ALPHA_MAX ? ALPHA_MAX : alpha;
+      placeDraw(i, gather, focusX, focusY);
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -448,43 +390,28 @@ export function initHeroField() {
       const from = tier === 0 ? 0 : tier === 1 ? farN : midN;
       const to = tier === 0 ? farN : tier === 1 ? midN : count;
       ctx.fillStyle = TIER_COLOR[tier];
-      if (tier > 0) {
-        ctx.globalAlpha = 0.11;
-        const trail = 0.014 * dpr;
-        for (let i = from; i < to; i += 1) {
-          if (drawA[i] <= 0) continue;
-          const sp2 = vx[i] * vx[i] + vy[i] * vy[i];
-          if (sp2 < 0.014) continue;
-          ctx.fillRect(
-            Math.round(drawX[i] - vx[i] * cssW * trail),
-            Math.round(drawY[i] - vy[i] * cssH * trail),
-            drawS[i],
-            drawS[i],
-          );
-        }
-      }
       drawRange(from, to);
     }
     ctx.globalAlpha = 1;
   };
 
-  const paint = (dt: number) => {
-    const followBlend = 1 - Math.exp(-dt * 5.5);
-    followX += (pointerX - followX) * followBlend;
-    followY += (pointerY - followY) * followBlend;
-    if (pointerFine.matches) {
-      const nextX = followX.toFixed(3);
-      const nextY = followY.toFixed(3);
-      if (nextX !== shownX || nextY !== shownY) {
-        shownX = nextX;
-        shownY = nextY;
-        field.style.setProperty('--mx', nextX);
-        field.style.setProperty('--my', nextY);
-      }
+  const drawSettled = () => {
+    const lean = pointerFine.matches ? 1 : 0;
+    for (let i = 0; i < count; i += 1) {
+      nx[i] = homeX[i] + followX * shift[i] * lean;
+      ny[i] = homeY[i] + followY * shift[i] * 0.7 * lean;
+      vx[i] = 0;
+      vy[i] = 0;
+      placeDraw(i, 0, 0.3, 0.46);
     }
-    if (!burstDone) fit();
-    paintDust(dustReveal());
-    paintBurst(dt);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let tier = 0; tier < 3; tier += 1) {
+      const from = tier === 0 ? 0 : tier === 1 ? farN : midN;
+      const to = tier === 0 ? farN : tier === 1 ? midN : count;
+      ctx.fillStyle = TIER_COLOR[tier];
+      drawRange(from, to);
+    }
+    ctx.globalAlpha = 1;
   };
 
   const loop = (now: number) => {
@@ -508,7 +435,7 @@ export function initHeroField() {
   };
 
   const start = () => {
-    if (running || !onScreen || hidden) return;
+    if (running || !onScreen || hidden || reduced) return;
     running = true;
     last = performance.now();
     raf = requestAnimationFrame(loop);
@@ -521,6 +448,11 @@ export function initHeroField() {
   };
 
   fit();
+  document.documentElement.classList.add('field-live');
+  if (reduced) {
+    drawSettled();
+    return;
+  }
   paint(0);
   start();
 
@@ -536,9 +468,10 @@ export function initHeroField() {
     else start();
   });
   window.addEventListener('resize', () => {
-    if (!burstDone) fit();
+    fit();
+    if (reduced) drawSettled();
+    else if (!running) paint(0);
   });
-
   window.addEventListener(
     'pointermove',
     (event) => {
@@ -548,15 +481,4 @@ export function initHeroField() {
     },
     { passive: true },
   );
-  pointerFine.addEventListener('change', () => {
-    if (pointerFine.matches) return;
-    pointerX = 0;
-    pointerY = 0;
-    followX = 0;
-    followY = 0;
-    shownX = '0.000';
-    shownY = '0.000';
-    field.style.setProperty('--mx', '0');
-    field.style.setProperty('--my', '0');
-  });
 }
