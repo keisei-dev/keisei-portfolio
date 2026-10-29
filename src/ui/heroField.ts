@@ -8,16 +8,16 @@ type DustLayer = {
   waves: Wave[];
   originX: number;
   originY: number;
-  tau: number;
-  fade: number;
+  /** Ease-out quart span. Offset and fade are both gone at this time. */
+  span: number;
   twinkle: { period: number; phase: number; lo: number; hi: number };
   desktopOnly: boolean;
 };
 
 /**
- * One clock drives every speck layer. The entrance is a critically damped
- * offset (starts at rest, velocity returns to zero) added to a drift that
- * is already running, so nothing has to stop and start.
+ * One clock drives every speck layer. Drift is already running. The entrance
+ * is an ease-out quart offset that reaches zero, with zero velocity, at the
+ * end of its span, so it joins the drift without a stop or a kink.
  */
 export function initHeroField() {
   const hero = document.getElementById('hero');
@@ -43,8 +43,7 @@ export function initHeroField() {
       ],
       originX: 64,
       originY: 168,
-      tau: 0.72,
-      fade: 0.62,
+      span: 0.9,
       twinkle: { period: 9.5, phase: 0.6, lo: 0.2, hi: 0.34 },
       desktopOnly: false,
     },
@@ -59,8 +58,7 @@ export function initHeroField() {
       ],
       originX: -150,
       originY: 46,
-      tau: 0.84,
-      fade: 0.74,
+      span: 0.98,
       twinkle: { period: 7.2, phase: 2.4, lo: 0.84, hi: 1 },
       desktopOnly: true,
     },
@@ -75,8 +73,7 @@ export function initHeroField() {
       ],
       originX: 96,
       originY: -132,
-      tau: 0.6,
-      fade: 0.5,
+      span: 0.82,
       twinkle: { period: 5.8, phase: 1.1, lo: 0.88, hi: 1 },
       desktopOnly: true,
     },
@@ -102,10 +99,17 @@ export function initHeroField() {
     return m < 0 ? m + size : m;
   };
 
-  /** Critically damped return to zero. Velocity is 0 at t = 0 and again as t grows. */
-  const settle = (distance: number, tau: number, t: number) => {
-    const k = t / tau;
-    return distance * (1 + k) * Math.exp(-k);
+  /**
+   * Remainder of an ease-out quart. Full offset at t = 0, exactly 0 at
+   * t >= span, and the derivative is 0 there so the drift takes over cleanly.
+   * Initial speed is 4 * distance / span.
+   */
+  const quartOut = (span: number, t: number) => {
+    if (t <= 0) return 1;
+    if (t >= span) return 0;
+    const u = 1 - t / span;
+    const u2 = u * u;
+    return u2 * u2;
   };
 
   const paint = (dt: number) => {
@@ -133,9 +137,10 @@ export function initHeroField() {
         x += wave.ax * Math.sin(angle);
         y += wave.ay * Math.cos(angle);
       }
-      x += settle(layer.originX, layer.tau, time);
-      y += settle(layer.originY, layer.tau, time);
-      const appear = 1 - Math.exp(-time / layer.fade);
+      const entrance = quartOut(layer.span, time);
+      x += layer.originX * entrance;
+      y += layer.originY * entrance;
+      const appear = 1 - entrance;
       const breath = 0.5 - 0.5 * Math.cos((time / layer.twinkle.period) * Math.PI * 2 + layer.twinkle.phase);
       const opacity = (layer.twinkle.lo + (layer.twinkle.hi - layer.twinkle.lo) * breath) * appear;
       layer.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
