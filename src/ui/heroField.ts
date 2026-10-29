@@ -8,9 +8,13 @@ type DustLayer = {
   waves: Wave[];
   originX: number;
   originY: number;
-  /** Ease-out quart span. Offset and fade are both gone at this time. */
+  /** Ease-out quart span. The travel offset is gone, with zero velocity, at this time. */
   span: number;
   twinkle: { period: number; phase: number; lo: number; hi: number };
+  /** Opacity at the start of the burst. It decays into the resting twinkle. */
+  crest?: number;
+  fade?: number;
+  crestTau?: number;
   desktopOnly: boolean;
 };
 
@@ -27,9 +31,10 @@ export function initHeroField() {
 
   const dust = (name: string) => field.querySelector<HTMLElement>(`.hero-field__dust--${name}`);
   const far = dust('far');
+  const fineDust = dust('fine');
   const mid = dust('mid');
   const near = dust('near');
-  if (!far || !mid || !near) return;
+  if (!far || !fineDust || !mid || !near) return;
 
   const layers: DustLayer[] = [
     {
@@ -44,7 +49,25 @@ export function initHeroField() {
       originX: 64,
       originY: 168,
       span: 0.9,
-      twinkle: { period: 9.5, phase: 0.6, lo: 0.2, hi: 0.34 },
+      twinkle: { period: 14, phase: 0.6, lo: 0.28, hi: 0.32 },
+      desktopOnly: false,
+    },
+    {
+      el: fineDust,
+      tile: 180,
+      vx: 180 / 168,
+      vy: -180 / 204,
+      waves: [
+        { ax: 8, ay: 6, freq: (Math.PI * 2) / 24, phase: 0.2 },
+        { ax: -5, ay: 7, freq: (Math.PI * 2) / 39, phase: 1.5 },
+      ],
+      originX: -72,
+      originY: 110,
+      span: 0.86,
+      twinkle: { period: 16, phase: 0.4, lo: 0.34, hi: 0.38 },
+      crest: 1,
+      fade: 0.09,
+      crestTau: 0.5,
       desktopOnly: false,
     },
     {
@@ -59,8 +82,8 @@ export function initHeroField() {
       originX: -150,
       originY: 46,
       span: 0.98,
-      twinkle: { period: 7.2, phase: 2.4, lo: 0.84, hi: 1 },
-      desktopOnly: true,
+      twinkle: { period: 13, phase: 2.4, lo: 0.96, hi: 1 },
+      desktopOnly: false,
     },
     {
       el: near,
@@ -74,8 +97,8 @@ export function initHeroField() {
       originX: 96,
       originY: -132,
       span: 0.82,
-      twinkle: { period: 5.8, phase: 1.1, lo: 0.88, hi: 1 },
-      desktopOnly: true,
+      twinkle: { period: 11, phase: 1.1, lo: 0.96, hi: 1 },
+      desktopOnly: false,
     },
   ];
 
@@ -140,9 +163,14 @@ export function initHeroField() {
       const entrance = quartOut(layer.span, time);
       x += layer.originX * entrance;
       y += layer.originY * entrance;
-      const appear = 1 - entrance;
       const breath = 0.5 - 0.5 * Math.cos((time / layer.twinkle.period) * Math.PI * 2 + layer.twinkle.phase);
-      const opacity = (layer.twinkle.lo + (layer.twinkle.hi - layer.twinkle.lo) * breath) * appear;
+      const rest = layer.twinkle.lo + (layer.twinkle.hi - layer.twinkle.lo) * breath;
+      let opacity = rest * (1 - entrance);
+      if (layer.crest && layer.fade && layer.crestTau) {
+        const fadeIn = 1 - Math.exp(-time / layer.fade);
+        const extra = Math.exp(-time / layer.crestTau);
+        opacity = (rest + (layer.crest - rest) * extra) * fadeIn;
+      }
       layer.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
       layer.el.style.opacity = opacity.toFixed(3);
     }
