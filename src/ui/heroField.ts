@@ -76,6 +76,9 @@ export function initHeroField() {
   let delay = new Float32Array(0);
   let returnAt = new Float32Array(0);
   let returnDur = new Float32Array(0);
+  let departX = new Float32Array(0);
+  let departY = new Float32Array(0);
+  let coastOn = new Uint8Array(0);
   let base = new Float32Array(0);
   let size = new Float32Array(0);
   let phase = new Float32Array(0);
@@ -126,6 +129,9 @@ export function initHeroField() {
     delay = new Float32Array(n);
     returnAt = new Float32Array(n);
     returnDur = new Float32Array(n);
+    departX = new Float32Array(n);
+    departY = new Float32Array(n);
+    coastOn = new Uint8Array(n);
     base = new Float32Array(n);
     size = new Float32Array(n);
     phase = new Float32Array(n);
@@ -220,8 +226,8 @@ export function initHeroField() {
       }
       freq2[i] = freq[i] * (0.63 + rand() * 0.3);
       twFreq[i] = (Math.PI * 2) / (9 + rand() * 8);
-      returnAt[i] = 0.64 + rand() * 0.34;
-      returnDur[i] = 0.5 + rand() * 0.7;
+      returnAt[i] = 0.64 + rand() * 0.22;
+      returnDur[i] = 0.7 + rand() * 0.18;
     }
   };
 
@@ -309,9 +315,63 @@ export function initHeroField() {
     const ry = narrow ? 0.1 : 0.085;
     const step = dt > 0 ? dt : 0;
 
+    const coastHome = (i: number, uRaw: number, hx: number, hy: number, idleVx: number, idleVy: number) => {
+      const u = uRaw >= 1 ? 1 : uRaw;
+      const inv = 1 - u;
+      if (coastOn[i] === 0) {
+        const remain0 = inv * inv * inv;
+        const div = remain0 > 0.25 ? remain0 : 1;
+        departX[i] = (nx[i] - hx) / div;
+        departY[i] = (ny[i] - hy) / div;
+        coastOn[i] = 1;
+      }
+      const remain = inv * inv * inv;
+      const dRemain = (-3 * inv * inv) / returnDur[i];
+      const arc = u * u * inv * inv;
+      const dArc = (2 * u * inv * (inv - u)) / returnDur[i];
+      const len = Math.hypot(departX[i], departY[i]) + 1e-4;
+      const sx = (-departY[i] / len) * spin[i];
+      const sy = (departX[i] / len) * spin[i];
+      const amp = 0.72 * spinAmp[i];
+      const aimX = hx + departX[i] * remain + sx * amp * arc;
+      const aimY = hy + departY[i] * remain + sy * amp * arc;
+      const chase = 2 + 8 * u * u;
+      const wantX = idleVx + departX[i] * dRemain + sx * amp * dArc + (aimX - nx[i]) * chase;
+      const wantY = idleVy + departY[i] * dRemain + sy * amp * dArc + (aimY - ny[i]) * chase;
+      let dvx = wantX - vx[i];
+      let dvy = wantY - vy[i];
+      const dv = Math.hypot(dvx, dvy);
+      const cap = 7.5 * step;
+      if (dv > cap && cap > 0) {
+        const scale = cap / dv;
+        dvx *= scale;
+        dvy *= scale;
+      } else if (cap === 0) {
+        dvx = 0;
+        dvy = 0;
+      }
+      vx[i] += dvx;
+      vy[i] += dvy;
+      nx[i] += vx[i] * step;
+      ny[i] += vy[i] * step;
+    };
+
     for (let i = 0; i < count; i += 1) {
       const local = time - delay[i];
       const pull = pullOf(local);
+      const uRaw = (time - returnAt[i]) / returnDur[i];
+      if (uRaw > 0) {
+        const ang1 = time * freq[i] + phase[i];
+        const ang2 = time * freq2[i] + phase[i] * 1.6;
+        const hx = homeX[i] + Math.sin(ang1) * ampX[i] + followX * shift[i] * lean;
+        const hy = homeY[i] + Math.cos(ang2) * ampY[i] + followY * shift[i] * 0.7 * lean;
+        const idleVx = Math.cos(ang1) * ampX[i] * freq[i];
+        const idleVy = -Math.sin(ang2) * ampY[i] * freq2[i];
+        coastHome(i, uRaw, hx, hy, idleVx, idleVy);
+        const remain = uRaw >= 1 ? 0 : (1 - uRaw) * (1 - uRaw) * (1 - uRaw);
+        placeDraw(i, pull * remain, focusX, focusY);
+        continue;
+      }
       const ret = smoother((time - returnAt[i]) / returnDur[i]);
       const gather = pull * (1 - ret);
       const g = gain[i];
