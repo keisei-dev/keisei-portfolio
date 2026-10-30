@@ -227,7 +227,7 @@ export function initHeroField() {
       freq2[i] = freq[i] * (0.63 + rand() * 0.3);
       twFreq[i] = (Math.PI * 2) / (9 + rand() * 8);
       returnAt[i] = 0.64 + rand() * 0.22;
-      returnDur[i] = 0.7 + rand() * 0.18;
+      returnDur[i] = 0.92 + rand() * 0.237;
     }
   };
 
