@@ -13,6 +13,19 @@ const smoother = (t: number) => {
   return c * c * c * (c * (c * 6 - 15) + 10);
 };
 
+const COAST_EASE = 0.45;
+const COAST_EASE_TOTAL = 1 + (COAST_EASE - 2) / 2 + (1 - 2 * COAST_EASE) / 3 + COAST_EASE / 4;
+
+/** Ease-out whose speed falls more slowly than a cubic, still zero at the end. */
+const coastEase = (u: number) => {
+  const inv = 1 - u;
+  const f = inv * inv * (1 + COAST_EASE * u);
+  const uu = u * u;
+  const integ =
+    u + ((COAST_EASE - 2) / 2) * uu + ((1 - 2 * COAST_EASE) / 3) * uu * u + (COAST_EASE / 4) * uu * uu;
+  return { remain: 1 - integ / COAST_EASE_TOTAL, slope: -f / COAST_EASE_TOTAL };
+};
+
 const pullOf = (local: number) => {
   if (local <= PULL_UP0) return 0;
   const up = smoother((local - PULL_UP0) / (PULL_UP1 - PULL_UP0));
@@ -227,7 +240,7 @@ export function initHeroField() {
       freq2[i] = freq[i] * (0.63 + rand() * 0.3);
       twFreq[i] = (Math.PI * 2) / (9 + rand() * 8);
       returnAt[i] = 0.64 + rand() * 0.22;
-      returnDur[i] = 0.92 + rand() * 0.237;
+      returnDur[i] = 1.012 + rand() * 0.261;
     }
   };
 
@@ -318,15 +331,15 @@ export function initHeroField() {
     const coastHome = (i: number, uRaw: number, hx: number, hy: number, idleVx: number, idleVy: number) => {
       const u = uRaw >= 1 ? 1 : uRaw;
       const inv = 1 - u;
+      const shaped = coastEase(u);
       if (coastOn[i] === 0) {
-        const remain0 = inv * inv * inv;
-        const div = remain0 > 0.25 ? remain0 : 1;
+        const div = shaped.remain > 0.25 ? shaped.remain : 1;
         departX[i] = (nx[i] - hx) / div;
         departY[i] = (ny[i] - hy) / div;
         coastOn[i] = 1;
       }
-      const remain = inv * inv * inv;
-      const dRemain = (-3 * inv * inv) / returnDur[i];
+      const remain = shaped.remain;
+      const dRemain = shaped.slope / returnDur[i];
       const arc = u * u * inv * inv;
       const dArc = (2 * u * inv * (inv - u)) / returnDur[i];
       const len = Math.hypot(departX[i], departY[i]) + 1e-4;
